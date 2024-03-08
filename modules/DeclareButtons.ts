@@ -1,1034 +1,2893 @@
 class Button {
-        private _btnID: string;
-        private _rootID: string;
-        private _label: typeBtnLabel;
-        private _parentBtn: Button;
-        private _children: Button[];
-        private _inlineBtns: Button[];
-        private _prayers: string[];
-        private _retrieved: boolean = false;
-        private _prayersArray: string[][] | string[][][];
-        private _titlesArray: string[][];
-        private _languages: string[];
-        private _onClick: Function;
-        private _afterShowPrayers: Function;
-        private _value: string;
-        private _cssClass: string;
-        private _showPrayers: boolean;
-        private _pursue:boolean;
-        
-        constructor(btn:typeButton) {
-                this._btnID = btn.btnID;
-                this._label = btn.label;
-                this._rootID = btn.rootID;
-                this._parentBtn = btn.parentBtn;
-                this._children = btn.children;
-                this._prayers = btn.prayers;
-                this._retrieved = btn.retrieved;
-                this._prayersArray = btn.prayersArray;
-                this._titlesArray = btn.titlesArray;
-                this._languages = btn.languages;
-                this._onClick = btn.onClick;
-                this._afterShowPrayers = btn.afterShowPrayers;
-                this._showPrayers = btn.showPrayers;
-                this._pursue = btn.pursue
-                this._value = btn.value;
-                btn.cssClass ? this._cssClass = btn.cssClass : this._cssClass = btnClass;
-                this._inlineBtns = btn.inlineBtns;
-        };
-//Getters
-        get btnID() { return this._btnID; };
-        get children() { return this._children; };
-        get prayers() { return this._prayers; };
-        get retrieved() { return this._retrieved };
-        get prayersArray() { return this._prayersArray; };
-        get titlesArray() { return this._titlesArray; };
-        get languages() {return this._languages;};
-        get label() {return this._label;};
-        get parentBtn() {return this._parentBtn;};
-        get rootID() {return this._rootID;};
-        get onClick() { return this._onClick; };
-        get afterShowPrayers() { return this._afterShowPrayers };
-        get showPrayers() { return this._showPrayers; };
-        get pursue() {return this._pursue;};
-        get value() { return this._value; };
-        get cssClass() { return this._cssClass; };
-        get inlineBtns() { return this._inlineBtns; };
-
-//Setters
-        set btnID(id) { this._btnID = id };
-        set label(lbl: typeBtnLabel) { this._label = lbl };
-        set parentBtn(parentBtn: Button) { this._parentBtn = parentBtn };
-        set prayers(btnPrayers: string[]) { this._prayers = btnPrayers; };
-        set retrieved(retrieved) { this._retrieved = retrieved };
-        set prayersArray(btnPrayersArray: string[][] | string[][][]){this._prayersArray = btnPrayersArray;};
-        set titlesArray(titles: string[][]) { this._titlesArray = titles };
-        set languages(btnLanguages: string[]){this._languages = btnLanguages;};
-        set onClick(fun: Function) { this._onClick = fun; };
-        set afterShowPrayers(fun: Function) { this._afterShowPrayers = fun };
-        set showPrayers (showPrayers:boolean){this._showPrayers = showPrayers;};
-        set pursue (pursue:boolean){this._pursue = pursue;};
-        set children(children: Button[]) { this._children = children; };
-        set cssClass(cssClass: string) { this._cssClass = cssClass };
-        set inlineBtns(btns:Button[]){this._inlineBtns = btns}
-};
+  private _btnID: string;
+  private _label: typeBtnLabel;
+  private _parentBtn: Button;
+  private _children: Button[];
+  private _prayersSequence: string[];
+  private _retrieved: boolean = false;
+  private _prayersArray: string[][][];
+  private _languages: string[];
+  private _onClick: Function;
+  private _afterShowPrayers: Function;
+  private _cssClass: string;
+  private _showPrayers: boolean;
+  private _docFragment: DocumentFragment;
 
 
-const btnMain: Button = new Button({
-        btnID: 'btnMain',
-        label: { AR: "العودة إلى القائمة الرئيسية", FR: "Retour au menu principal", EN: "Back to the main menu" },
-        onClick: () => {
-                btnMain.children = [btnMass, btnIncenseOffice, btnDayReadings];
+
+  constructor(btn: typeButton) {
+    this._btnID = btn.btnID;
+    this._label = btn.label;
+    this._parentBtn = btn.parentBtn;
+    this._children = btn.children;
+    this._prayersSequence = btn.prayersSequence;
+    this._retrieved = btn.retrieved;
+    this._prayersArray = btn.prayersArray;
+    this._languages = btn.languages;
+    this._onClick = btn.onClick;
+    this._afterShowPrayers = btn.afterShowPrayers;
+    this._showPrayers = btn.showPrayers;
+    this._docFragment = btn.docFragment;
+    btn.cssClass
+      ? (this._cssClass = btn.cssClass)
+      : (this._cssClass = btnClass);
+  }
+  //Getters
+  get btnID() {
+    return this._btnID;
+  }
+  get children() {
+    return this._children;
+  }
+  get prayersSequence() {
+    return this._prayersSequence;
+  }
+  get retrieved() {
+    return this._retrieved;
+  }
+  get prayersArray() {
+    return this._prayersArray;
+  }
+  get languages() {
+    return this._languages;
+  }
+  get label() {
+    return this._label;
+  }
+  get parentBtn() {
+    return this._parentBtn;
+  }
+  get onClick() {
+    return this._onClick;
+  }
+  get afterShowPrayers() {
+    return this._afterShowPrayers;
+  }
+  get showPrayers() {
+    return this._showPrayers;
+  }
+  get cssClass() {
+    return this._cssClass;
+  }
+  get docFragment() {
+    return this._docFragment;
+  }
+
+  //Setters
+  set btnID(id) {
+    this._btnID = id;
+  }
+  set label(lbl: typeBtnLabel) {
+    this._label = lbl;
+  }
+  set parentBtn(parentBtn: Button) {
+    this._parentBtn = parentBtn;
+  }
+  set prayersSequence(btnPrayers: string[]) {
+    this._prayersSequence = btnPrayers;
+  }
+  set retrieved(retrieved) {
+    this._retrieved = retrieved;
+  }
+  set prayersArray(btnPrayersArray: string[][][]) {
+    this._prayersArray = btnPrayersArray;
+  }
+  set languages(btnLanguages: string[]) {
+    this._languages = btnLanguages;
+  }
+  set onClick(fun: Function) {
+    this._onClick = fun;
+  }
+  set afterShowPrayers(fun: Function) {
+    this._afterShowPrayers = fun;
+  }
+  set showPrayers(showPrayers: boolean) {
+    this._showPrayers = showPrayers;
+  }
+  set children(children: Button[]) {
+    this._children = children;
+  }
+  set cssClass(cssClass: string) {
+    this._cssClass = cssClass;
+  }
+
+  set docFragment(docFragment: DocumentFragment) {
+    this._docFragment = docFragment;
+  }
+}
+
+const btnMainMenu: Button = new Button({
+  btnID: "btnMain",
+  label: {
+    AR: "العودة إلى القائمة الرئيسية",
+    FR: "Retour au menu principal",
+    EN: "Back to the main menu",
+  },
+  onClick: () => {
+    btnMainMenu.children = [
+      btnMass,
+      btnIncenseOffice,
+      btnDayReadings,
+      btnBookOfHours,
+      btnPsalmody,
+    ];
+
+    if (localStorage.editingMode === "true")
+      btnMainMenu.children.push(getEditModeButton());
+
+    if (Season === Seasons.KiahkWeek1 || Season === Seasons.KiahkWeek2)
+      btnPsalmody.label = {
+        AR: "الإبصلمودية الكيهكية",
+        FR: "Psalmodie de Kiahk",
+      };
+
+    (function showBtnsOnMainPage() {
+      if (leftSideBar.classList.contains("extended")) return; //If the left side bar is not hidden, we do not show the buttons on the main page because it means that the user is using the buttons in the side bar and doesn't need to navigate using the btns in the main page
+
+      let images: string[] = [
+        "url(./assets/btnMassBackground.jpg)",
+        "url(./assets/btnMassBackground.jpg)",
+        "url(./assets/btnMassBackground.jpg)",
+        "url(./assets/btnMassBackground.jpg)",
+        "url(./assets/btnMassBackground.jpg)",
+        "url(./assets/btnMassBackground.jpg)",
+        "url(./assets/btnIncenseBackground.jpg)",
+        "url(./assets/btnReadingsBackground.jpg)",
+        "url(./assets/btnBOHBackground.jpg)",
+        "url(./assets/btnBOHBackground.jpg)",
+      ];
+
+      containerDiv.innerHTML = "";
+      //We create html elements representing each of btnMain children. The created buttons will be appended to containerDiv directly
+      btnMainMenu.children
+        .map((btn) => {
+          createMainPageButton(btn) //We create an HTML button 
+            .style.backgroundImage =
+            images[btnMainMenu.children.indexOf(btn)];//We give it as background image, an image from the images list
+        });
+
+      function getBtnsDiv():HTMLDivElement {
+        let btnsDiv = document.createElement('div');
+        btnsDiv.id = 'btnsMainPageDiv'
+        btnsDiv.style.display = 'grid';
+
+        btnsDiv.style.gridTemplateColumns = (
+          (100 / 3).toString() + "% "
+        ).repeat(3);
+        containerDiv.appendChild(btnsDiv);
+        return btnsDiv
+      }
+
+      function createMainPageButton(btn: Button)
+        : HTMLButtonElement {
+        let btnsDiv = containerDiv.querySelector('#btnsMainPageDiv') as HTMLDivElement;
+        if (!btnsDiv) btnsDiv = getBtnsDiv();
+          return createBtn({
+            btn: btn,
+            btnsContainer: btnsDiv,
+            btnClass: "mainPageBtns",
+            clear: false,
+            onClick: () => onClickBtnFunction(btn),
+          }) as HTMLButtonElement
         }
+
+      function onClickBtnFunction(btn: Button) {
+        if (!btn.children || btn.children.length === 0)
+          btn.onClick(true); //if btn doesn't have childre, we call its onClick() function beacuse the children of some btns are added when tis function is called. We pass 'true' as argument, because it makes the function return the children and do not execute until its end
+        
+        let parentHtmlBtn = containerDiv.querySelector(
+          "#" + btn.btnID
+        ) as HTMLElement;
+        let backgroundImage;
+
+        if (parentHtmlBtn)
+          backgroundImage = parentHtmlBtn.style.backgroundImage;
+
+        (function showBtnPrayers() {
+          if (btn.children && !btn.prayersSequence) return showChildButtons();
+         // if (!btn.prayersSequence || btn.prayersSequence.length < 1) return;
+          showChildButtonsOrPrayers(btn, true); //If btn does not have children, it means that it shows prayers. We pass it to showChildButtonsOrPrayers
+          
+        })();
+
+        function showChildButtons() {
+          if (btn.children.length<1) return;
+          containerDiv.innerHTML = "";
+          btn.children
+          //for each child button of btn
+          .forEach((childBtn) => {
+            //We create an html element representing this button and give it 'mainPageBtns', and append it to containerDiv. It will have as background, the same image as the background image of btn
+           createMainPageButton(childBtn)
+            .style.backgroundImage = backgroundImage;
+          });
+          let goBackBtns =
+            [btnGoToPreviousMenu, btnMainMenu];
+          if (goBackBtns.includes(btn)) return;
+
+          goBackBtns
+          .forEach(btn=>
+            createMainPageButton(btn)
+            .style.backgroundImage = images[0]) //Finlay, we create an extra html button for btnGoToPreviousMenu and btnMainMenu, in order for the user to be able to navigate back to the btnMain menu of buttons
+          
+        };
+      }
+
+    })();
+  },
 });
 
-const btnGoBack: Button = new Button({
-        btnID: 'btnGoBack',
-        label: { AR: "السابق", FR: "Retour", EN: "Go Back" },
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
+const btnGoToPreviousMenu: Button = new Button({
+  btnID: "btnGoBack",
+  label: { AR: "السابق", FR: "Retour", EN: "Go Back" },
+  onClick: () => {
+    scrollToTop(); //scrolling to the top of the page
+  },
 });
 
 const btnMass: Button = new Button({
-        btnID:'btnMass',
-        label: { AR: "القداسات", FR: "Messes" },
-        onClick: () => {
-                btnMass.children = [btnIncenseDawn, btnMassOfferingOfTheLamb, btnMassRoshoumat, btnMassUnBaptised, btnMassBaptised];
-        }
-                
+  btnID: "btnMass",
+  label: { AR: "القداسات", FR: "Messes" },
+  onClick: (returnBtnChildren:boolean = false ) => {
+    btnMass.children = [btnIncenseDawn, btnMassUnBaptised, btnMassBaptised];
+    if (returnBtnChildren) return btnMass.children;
+  },
 });
 
-const btnIncenseOffice: Button = new Button(
-        {
-        btnID: 'btnIncenseOffice',
-        label:{
-                AR: "رفع بخور باكر أو عشية",
-                FR: "Office des Encens Aube et Soir"
+const btnIncenseOffice: Button = new Button({
+  btnID: "btnIncenseOffice",
+  label: {
+    AR: "رفع بخور باكر أو عشية",
+    FR: "Office des Encens Aube et Vêpres",
+  },
+  onClick: (returnBtnChildren:boolean = false) => {
+    //setting the children of the btnIncenseOffice. This must be done by the onClick() in order to reset them each time the button is clicked
+    btnIncenseOffice.children = [btnIncenseDawn, btnIncenseVespers];
+    //show or hide the PropheciesDawn button if we are in the Great Lent or JonahFast:
+
+    //We will remove the Vespers Button during if we are during the Great Lent or the Jonah Fast, and we are not a Saturday
+    if (
+      (Season === Seasons.GreatLent || Season === Seasons.JonahFast) &&
+      weekDay !== 6
+    )
+      btnIncenseOffice.children = btnIncenseOffice.children.filter(
+        (btn) => btn !== btnIncenseVespers
+      );
+
+    if (returnBtnChildren) return btnIncenseOffice.children;
+  },
+});
+
+const btnIncenseDawn: Button = new Button({
+  btnID: "btnIncenseDawn",
+  label: {
+    AR: "بُخُورِ بَاكِرِ",
+    FR: "Encens Aube",
+  },
+  showPrayers: true,
+  languages: [...prayersLanguages],
+  docFragment: new DocumentFragment(),
+  onClick: (): string[] => {
+    btnIncenseDawn.children = [btnReadingsGospelIncenseDawn];
+
+    if (Season === Seasons.GreatLent || Season === Seasons.JonahFast)
+      btnIncenseDawn.children.unshift(btnReadingsPropheciesDawn); //We add the prophecies button during the Great Leant and Jonah Fast
+
+    btnIncenseDawn.prayersSequence = [...IncensePrayersSequence].filter(
+      (title) => !title.startsWith(Prefix.incenseVespers)
+    ); //We will remove all the Incense Vespers titles from the prayersSequence Array
+
+    if (weekDay === 6)
+      //If we are a Saturday, we pray only the 'Departed Litany', we will hence remove the 'Sick Litany' and the 'Travellers Litany'
+      btnIncenseDawn.prayersSequence.splice(
+        btnIncenseDawn.prayersSequence.indexOf(
+          Prefix.incenseDawn + "SickPrayer&D=$copticFeasts.AnyDay"
+        ),
+        3, //We remove the SickPrayer, the TravelersParayer and the Oblations Prayer
+        Prefix.incenseVespers + "DepartedPrayer&D=$copticFeasts.AnyDay"
+      );
+    else if (weekDay === 0 || lordFeasts.includes(copticDate))
+      //If we are a Sunday or the day is a Lord's Feast, or the oblation is present, we remove the 'Travellers Litany' and keep the 'Sick Litany' and the 'Oblation Litany'
+      btnIncenseDawn.prayersSequence = btnIncenseDawn.prayersSequence.filter(
+        (tbl) =>
+          !tbl[0][0].startsWith(
+            Prefix.incenseDawn + "TravelersPrayer&D=$copticFeasts.AnyDay"
+          )
+      );
+
+    scrollToTop();
+    return btnIncenseDawn.prayersSequence;
+  },
+  afterShowPrayers: async (
+    btn: Button = btnIncenseDawn,
+    gospelPrefix: string = Prefix.gospelDawn,
+    gospelArray: string[][][] = ReadingsArrays.GospelDawnArray
+  ) => {
+    let btnDocFragment = btn.docFragment;
+
+    insertCymbalVersesAndDoxologies(btn);
+
+    getGospelReadingAndResponses({
+      liturgy: gospelPrefix,
+      prayersArray: gospelArray,
+      languages: getLanguages(
+        PrayersArraysKeys.find((array) => array[0] === gospelPrefix)[1]
+      ),
+      container: btnDocFragment,
+      isMass: true,
+      clearContainer: false,
+    });
+
+    (function hideGodHaveMercyOnUsIfBishop() {
+      let dataRoot =
+        Prefix.commonPrayer +
+        "PrayThatGodHaveMercyOnUs&D=$copticFeasts.AnyDay";
+
+      let godHaveMercyHtml: HTMLDivElement[] = selectElementsByDataSetValue(
+        btnDocFragment,
+        dataRoot,
+        { startsWith: true }
+      ); //We select all the paragraphs not only the paragraph for the Bishop
+
+      godHaveMercyHtml
+        .filter(
+          (htmlRow) =>
+            godHaveMercyHtml.indexOf(htmlRow) > 0 &&
+            godHaveMercyHtml.indexOf(htmlRow) !== godHaveMercyHtml.length - 2
+        )
+        .forEach((htmlRow) => htmlRow.remove());
+
+      let godHaveMercy: string[][] = findTable(dataRoot, CommonPrayersArray) as string[][]; //We get the entier table not only the second row. Notice that the first row of the table is the row containing the title
+
+      if (!godHaveMercy)
+        return console.log("Didn't find table Gode Have Mercy");
+
+      addExpandablePrayer({
+        insertion: godHaveMercyHtml[0].nextElementSibling as HTMLDivElement,
+        btnID: "godHaveMercy",
+        label: {
+          AR: godHaveMercy[1][2], //This is the arabic text of the lable
+          FR: godHaveMercy[1][1], //this is the French text of the label
         },
-        onClick: () => {
-        //setting the children of the btnIncenseOffice. This must be done by the onClick() in order to reset them each time the button is clicked 
-        btnIncenseOffice.children = [btnIncenseDawn, btnIncenseVespers];        
-        //show or hide the PropheciesDawn button if we are in the Great Lent or JonahFast:
-                if (Season == Seasons.GreatLent || Season == Seasons.JonahFast) {
-                        //we will remove the btnIncenseVespers from the children of btnIncenseOffice for all the days of the Week except Saturday because there is no Vespers incense office except on Saturday:
-                        if (todayDate.getDay() != 6) {
-                                btnIncenseOffice.children.splice(btnIncenseOffice.children.indexOf(btnIncenseVespers), 1);
-                        };
+        prayers: [godHaveMercy.slice(1, 4)], //We add only the 1st to 3rd rows: the 1st row is a comment from which we retrieved the text for the title, the 2nd and 3rd row is also a comment
+        languages: btnMassUnBaptised.languages,
+        dataGroup: dataRoot,
+      });
+    })();
 
-                        // we will remove or add the Prophecies Readings button as a child to btnDayReadings depending on the day
-                if (
-                        btnIncenseDawn.children.indexOf(
-                                btnReadingsPropheciesDawn) == -1 //The Prophecies button is not among the children of btnDayReadings
-                        && todayDate.getDay() != 0 //i.e., we are not a Sunday
-                        && todayDate.getDay() != 6 //i.e., we are not a Saturday
-                ) {
-                        //it means btnReadingsPropheciesDawn does not appear in the Incense Dawn buttons list (i.e., =-1), and we are neither a Saturday or a Sunday, which means that there are prophecies lectures for these days and we need to add the button in all the Day Readings Menu, and the Incense Dawn
-                        btnIncenseDawn.children.unshift(
-                                btnReadingsPropheciesDawn
-                        );//We add the Prophecies button at the beginning of the btnIncenseDawn children[], i.e., we add it as the first button in the list of Incense Dawn buttons, the second one is the Gospel
-                       } else if (
-                        btnIncenseDawn.children.indexOf(
-                                btnReadingsPropheciesDawn) > -1
-                        && (
-                                todayDate.getDay() == 0 //i.e., we are a Sunday
-                                || todayDate.getDay() == 6 //i.e., we are a Saturday
-                                )
-                ) {
-                        //it means btnReadingsPropheciesDawn appears in the Incense Dawn buttons list, and we are either a Saturday or a Sunday, which means that there are no prophecies for these days and we need to remove the button from all the menus to which it had been added before
-                        btnIncenseDawn.children.splice(
-                                btnIncenseDawn.children.indexOf(
-                                        btnReadingsPropheciesDawn
-                                ),
-                                1
-                        );
-                        };
-                //removing the vespers prayers if we are not a Saturday, and adding it if we aree
-                        if (btnDayReadings.children && todayDate.getDay() != 6 && btnDayReadings.children.indexOf(btnIncenseVespers) > -1) {
-                        //it means we are not a Saturday. we need to remove the btnIncenseVespers because there are not vespers
-                        btnDayReadings.children.splice(btnDayReadings.children.indexOf(btnIncenseVespers), 1);
-                        }
-                else if(btnDayReadings.children && todayDate.getDay() == 6 && btnDayReadings.children.indexOf(btnIncenseVespers) == -1){
-                                //it means we are  a Saturday. we need to add the btnReadingsGospelIncenseVespers if missing
-                                btnDayReadings.children.splice(btnDayReadings.children.indexOf(btnReadingsGospelIncenseDawn), 0, btnIncenseVespers);
-                        };
-        };
-        }
+    (async function addGreatLentPrayers() {
+      if (btn.btnID !== btnIncenseDawn.btnID) return;
+      if (Season !== Seasons.GreatLent && Season !== Seasons.JonahFast) return;
+      if (weekDay > 0 && weekDay < 6) {
+        console.log("we are not a sunday");
+        //We are neither a Saturday nor a Sunday, we will hence display the Prophecies dawn buton
+        (function showPropheciesDawnBtn() {
+          if (Season !== Seasons.GreatLent) return;
+          //If we are during any day of the week, we will add the Prophecies readings to the children of the button
+          if (btnIncenseDawn.children.indexOf(btnReadingsPropheciesDawn) < 0)
+            btnIncenseDawn.children.unshift(btnReadingsPropheciesDawn);
+        })();
+        (async function insertEklonominTaghonata() {
+          let efnotiNaynan: HTMLDivElement[] = selectElementsByDataSetValue(
+            btnDocFragment,
+            Prefix.commonPrayer + "EfnotiNaynan&D=$copticFeasts.AnyDay", undefined, 'group'
+          );
+
+          let insertion = efnotiNaynan[efnotiNaynan.length - 1].nextSibling as HTMLElement; //This is the end of the efnotiNaynan
+          let godHaveMercy = findTable(Prefix.incenseDawn + "GodHaveMercyOnUs&D=$Seasons.GreatLent", IncensePrayersArray);
+
+          if (!godHaveMercy) return console.log("Didn't find God Have Mercy for Great Lent");
+
+          insertPrayersAdjacentToExistingElement({
+            tables: [godHaveMercy],
+            languages: prayersLanguages,
+            position: { beforeOrAfter: "beforebegin", el: insertion },
+            container: btnDocFragment,
+          });
+
+          let refrains = selectElementsByDataSetValue(
+            btnDocFragment,
+            Prefix.incenseDawn + "GodHaveMercyOnUsRefrain&D=$Seasons.GreatLent")
+            .filter((htmlRow) => htmlRow.classList.contains("Title"));
+
+          refrains.forEach((htmlRow) => {
+            if (refrains.indexOf(htmlRow) > 0) htmlRow.remove();
+          });
+        })();
+      } else {
+        if (btnIncenseDawn.children.indexOf(btnReadingsPropheciesDawn) > -1)
+          btnIncenseDawn.children.splice(
+            btnIncenseDawn.children.indexOf(btnReadingsPropheciesDawn),
+            1
+          );
+      }
+    })();
+
+    (async function addExpandableBtnForAdamDoxolgies() {
+      if (btn !== btnIncenseDawn) return;
+      if (btnDocFragment.children.length === 0) return;
+
+      addExpandablePrayer({
+        insertion: btnDocFragment.children[0] as HTMLElement,
+        btnID: "AdamDoxologies",
+        label: {
+          AR: "ذكصولوجيات باكر آدام",
+          FR: "Doxologies Adam Aube",
+        },
+        prayers: DoxologiesPrayersArray.filter((table) =>
+          table[0][0].startsWith(Prefix.doxologies + "AdamDawn")),
+        languages: btnIncenseDawn.languages,
+      })[1];
+    })();
+  },
 });
 
-const btnIncenseDawn: Button = new Button(
-        {
-                btnID: 'btnIncenseDawn',
-                rootID: 'IncenseDawn',
-                label: {
-                        AR: 'بخور باكر',
-                        FR: 'Encens Aube'
-                },
-                showPrayers: false,
-                children: [],//we are initiating and empty array in order to avoid errors later
-                prayersArray: PrayersArray,
-                languages: [...prayersLanguages],
-                onClick: (): string[] => {
-                        (function setBtnChildrenAndPrayers() {
-                                //We will set the children of the button:
-                                btnIncenseDawn.children = [btnReadingsGospelIncenseDawn];
-                                //we will also set the prayers of the Incense Dawn button
-                                btnIncenseDawn.prayers = [...IncensePrayers];
-                        })();
+const btnIncenseVespers: Button = new Button({
+  btnID: "btnIncenseVespers",
+  label: {
+    AR: "بُخُورِ عَشِيَّةَ",
+    FR: "Incense Vespers",
+  },
+  showPrayers: true,
+  docFragment: new DocumentFragment(),
+  languages: [...prayersLanguages],
+  onClick: (): string[] => {
+    btnIncenseVespers.prayersSequence = [...IncensePrayersSequence].filter(
+      (title) =>
+        title !== Prefix.commonPrayer + "AngelsPrayer&D=$copticFeasts.AnyDay" &&
+        !title.startsWith(Prefix.incenseDawn)
+    );
 
-                        (function adaptCymbalVerses() {
-                                //removing the non-relevant Cymbal prayers according to the day of the week: Wates/Adam
-                                if (todayDate.getDay() > 2) {
-                                        //we are between Wednesday and Saturday, we keep only the "Wates" Cymbal prayers
-                                        btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf("PrayerCymbalVersesAdam&D=0000"), 1)
-                                
-                                } else {
-                                        //we are Sunday, Monday, or Tuesday. We keep only the "Adam" Cymbal prayers
-                                        btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf("PrayerCymbalVersesWates&D=0000"), 1)
-                                };
-                        })();
-
-                        (function removeNonRelevantLitanies() {
-                                //removing the Departed Litany from IncenseDawn prayers
-                                btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf('PrayerDepartedPrayerPart1&D=0000'), 5);
-                                //removing "Lord keep us this night without sin"
-                                btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf('PrayerLordKeepUsThisNightWithoutSin&D=0000'), 1);
-                        })();
-
-                        (function removeStMaryVespersDoxology() {
-                                //removing the Wates Vespers' Doxology for St. Mary
-                                btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf('PrayerDoxologyVespersWatesStMary'), 1);
-                        })();
-                
-                        let index: number;
-                        (function removeEklonominTaghonata() {
-                                //We remove "Eklonomin Taghonata" from the prayers array
-                                if ((Season != Seasons.GreatLent && Season != Seasons.JonahFast) || (todayDate.getDay() == 0 || todayDate.getDay() == 6)) {
-                                        btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf('PrayerGodHaveMercyOnUsRefrainComment&S=GL'), 36); //this is the comment, we remove 36 prayers including the comment
-                                };
-                        })();
-                        
-                        //We will then add other prayers according to the season or feast
-                        (function addGreatLentPrayers() {
-                                if (Season == Seasons.GreatLent && todayDate.getDay() != 0 && todayDate.getDay() != 6) {
-                                
-                                        (function showPropheciesDawnBtn() {
-                                                //If we are during any day of the week, we will add the Prophecies readings to the children of the button
-                                                if (btnIncenseDawn.children.indexOf(btnReadingsPropheciesDawn) == -1) {
-                                                        btnIncenseDawn.children.unshift(btnReadingsPropheciesDawn)
-                                                };
-                                        })();
-                                        //we will also add the 'Eklonomin Taghonata' prayer to the Dawn Incense Office prayers, after the 'Efnoti Naynan' prayer       
-                                        (function addEklonominTaghonata() {
-                                                index = btnIncenseDawn.prayers.indexOf('PrayerEfnotiNaynanPart4&D=0000') + 2;
-                                                let temp: string[] = [];
-                                                //we add the comment
-                                                temp.push('PrayerGodHaveMercyOnUsRefrainComment&S=GL');
-                                                let prayer: string[] = ['PrayerGodHaveMercyOnUsRefrain&S=GL', 'PrayerKyrieElieson&D=0000', 'PrayerKyrieEliesonThreeTimesWithoutAmen&D=0000'];
-                                                let id: string[] = ['PrayerGodHaveMercyOnUsPart', '&S=GL'];
-                                                let kyrielson: string = prayer[1], lastKyrie: string;
-                                                //then we add the refraint + each set of 3 prayers
-                                                for (let i = 1; i < 14; i += 3) {
-                                                        i + 2 == 15 ? lastKyrie = prayer[2] : lastKyrie = kyrielson;
-                                                        temp.push(prayer[0], id[0] + i.toString() + id[1], kyrielson, id[0] + (i + 1).toString() + id[1], kyrielson, id[0] + (i + 2).toString() + id[1], lastKyrie);
-                                                };
-                                                btnIncenseDawn.prayers.splice(index, 0, ...temp)
-                                        })();
-                                        
-                                        //We will then add the GreatLent      Doxologies to the Doxologies before the first Doxology of St. Mary
-                                        (function addGreatLentDoxologies() {
-                                                index = btnIncenseDawn.prayers.indexOf('PrayerDoxologyArchangelMichaelWates&D=0000') - 1;
-                                                if (todayDate.getDay() != 0 && todayDate.getDay() != 6) {
-                                                        btnIncenseDawn.prayers.splice(index, 0, ...['PrayerDoxology1&D=GLWeek', 'PrayerDoxology2&D=GLWeek', 'PrayerDoxology3&D=GLWeek', 'PrayerDoxology4&D=GLWeek', 'PrayerDoxology5&D=GLWeek']);
-                                                } else if (todayDate.getDay() == (0 || 6)) {
-                                                        btnIncenseDawn.prayers.splice(index, 0, 'PrayerDoxology1&D=GLSundays')
-                                                };
-                                        })();
-                                }
-                        })();
-                        
-                        (function addKiahkPrayers() {
-                                if (Number(copticMonth) == 4) {
-                                        index = btnIncenseDawn.prayers.indexOf('PrayerDoxologyStMaryDate=0000') - 1;
-                                        btnIncenseDawn.prayers.splice(index, 0, ...['PrayerDoxology1&D=0004', 'PrayerDoxology2&D=0004', 'PrayerDoxology3&D=0004', 'PrayerDoxology4&D=0004',
-                                                'PrayerDoxology5&D=0004',
-                                                'PrayerDoxology6&D=0004'])
-                                };
-                        })();
-
-                        (function addResurrectionPrayers() {
-                                if (Season == Seasons.Resurrection) {
-                                };
-                        })();
-                        return btnIncenseDawn.prayers
-                },
-                afterShowPrayers: async () => {
-                        (function addInlineBtnForAdamDoxolgies() {
-                                //Adding an inline Button for showing the "Adam" Doxologies, and removing the id of the Adam Doxologies from the btn.prayers array
-                                let btn = new Button({
-                                        btnID: 'AdamDoxologies',
-                                        label: {
-                                                AR: 'ذكصولوجيات باكر آدام',
-                                                FR: 'Doxologies Adam Aube'
-                                        },
-                                        cssClass: inlineBtnClass,
-                                        prayers: [],
-                                        prayersArray: btnIncenseDawn.prayersArray,
-                                        languages: btnIncenseDawn.languages,
-                                        inlineBtns: [],
-                                        showPrayers: false,
-                                        onClick: () => {
-                                                let goBack = new Button({
-                                                        btnID: btnGoBack.btnID,
-                                                        label: btnGoBack.label,
-                                                        cssClass: inlineBtnClass,
-                                                        parentBtn: btnIncenseDawn,
-                                                        onClick: () => newDiv.remove()
-                                                });
-                                                showPrayers(btn, false); //We show the prayers of btn (clearSideBar = false)
-                                                //We then create a goBack btn that we will display on top of containerDiv
-                                                let goBackDiv = document.createElement('div');
-                                                createBtn(goBack, goBackDiv, btn.cssClass, false);
-                                                goBackDiv.style.justifySelf = 'center';
-                                                goBackDiv.style.justifyContent = 'center';
-                                                goBackDiv.id = 'goBack';
-                                                containerDiv.children[0].insertAdjacentElement('beforebegin', goBackDiv);
-                                        }
-                                });
-                                                        
-                                let newDiv = document.createElement('div'); //Creating a div container in which the btn will be displayed
-                                newDiv.classList.add('inlineBtns');
-
-                                createBtn(btn, newDiv, btn.cssClass, true); //creating the html div for the button (which is a div with an 'on click' event listener calling showChildButtonsOrPrayers(btn))
-        
-                                btnIncenseDawn.prayers.map(prayer => {
-                                        if (prayer.includes('DoxologiesAdam')) {
-                                                //adding the id of the prayer to the prayers of the inline button that we created
-                                                btn.prayers.push(prayer);
-                                                //then removing the prayer id from the btnIncenseDawn.prayers array in order to exclude them unless requested by the user by clicking on the inline button
-                                                btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf(prayer), 1);
-                                        };
-                                });
-                                //We first show the prayers of btnIncenseDawn
-                                showPrayers(btnIncenseDawn, false);
-                                //We set showPrayers to false in order to prevent the prayers from being shown again by showChildButtonsOrPrayers()
-                                //then we append the newDiv
-                                containerDiv.children[0].insertAdjacentElement('beforebegin', newDiv); //Inserting the div containing the button as 1st element of containerDiv
-                        })();
-                        (async function insertGospelReadings() {
-                                let responses: string[] = setGospelPrayers(Readings.GospelDawn);//this gives us an array like ['PsalmResponse&D=####', 'RGID', 'GospelResponse&D=####']
-
-                                btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf('PrayerGospelPrayerPart2&D=0000') + 1, 0, responses[0]); //inserting Psalm Response id (which corresponds to responses[0])
-
-                                btnIncenseDawn.prayers.splice(btnIncenseDawn.prayers.indexOf('PrayerGospelResponse&D=0000'), 1, responses[2]); //inserting Psalm Response id (which corresponds to responses[0])
-                                
-                                //We create a fake button that we will pass to showPrayers() in order to retrieve the Gospel Text and append it to newDiv
-                                let fakeBtn: Button = new Button({
-                                        btnID: 'fakeGospelReadingBtn',
-                                        label: { AR: '', FR: '' },
-                                        cssClass: inlineBtnClass,
-                                        prayers: [responses[1] + '&D=' + copticReadingsDate],
-                                        prayersArray: ReadingsArrays.GospelDawnArray,
-                                        languages: btnReadingsGospelIncenseDawn.languages,
-                                });
-                                //We create a new div to which we will append the Gospel
-                                let gospelDiv: HTMLDivElement = document.createElement('div');
-                                gospelDiv.style.display = 'grid';
-                                gospelDiv.style.backgroundColor = 'white';
-                                findAndProcessPrayers(fakeBtn.prayers[0], fakeBtn, gospelDiv);
-
-                                //We will create another div in which we will put the Psalm text
-                                let psalmDiv = document.createElement('div');
-                                psalmDiv.style.backgroundColor = 'white';
-                                if (gospelDiv.children[0] && gospelDiv.children[0].classList.contains('TargetRowTitle')) {
-                                        //If the first child is a div with class 'TargetRowTitle', it means this is the title of the Psalm
-                                        psalmDiv.appendChild(gospelDiv.children[0]); //we append the title to the psalmDiv
-                                        for (let i = 0; i < gospelDiv.children.length; i += 0) {
-                                                //We then loop through the following children of newDiv. If they do not have the class 'TargetRowTitle' it means this is the core text of the Psalm, we append it to the psalmDiv and remove it from the newDiv.
-                                                if (!gospelDiv.children[i].classList.contains('TargetRowTitle')) {
-                                                        psalmDiv.appendChild(gospelDiv.children[i]);
-                                                } else {
-                                                        //If we stumble upon another child div with the class 'TargetRowTitle', this is the title of the gospel itself, we break.
-                                                        break
-                                                }
-                                        }
-
-                                        
-                                };
-
-                                containerDiv.querySelector('div[data-root=\"' + 'PrayerGospelIntroductionPsalmComment&D=0000' + '\"').insertAdjacentElement('afterend', psalmDiv);
-
-                                containerDiv.querySelector('div[data-root=\"' + 'PrayerGospelIntroductionGospelComment&D=0000' + '\"').insertAdjacentElement('afterend', gospelDiv);
-                                
-                                //Setting the number of columns and their widths for the each child of psalmDiv
-                                setCSSGridTemplate(psalmDiv);
-                                
-                                //Setting the number of columns and their widths for the each child of newDiv
-                                setCSSGridTemplate(gospelDiv);
-                        })();
-                        (async function removeEklonominTaghonataExcessiveTitles(){
-                                let titles = containerDiv.querySelectorAll('div[data-root="PrayerGodHaveMercyOnUsRefrain&S=GL"]');
-                                if (titles) {
-                                        for (let i = 7; i < titles.length; i+=7){
-                                                titles[i].remove()
-                                        }
-                                };
-                                let links = rightSideBar.querySelector('#sideBarBtns').querySelectorAll('a[href*="#PrayerGodHaveMercyOnUsRefrain"');
-                                for (let i = 1; i < links.length; i++){
-                                        links[i].remove();
-                                };
-                        })();            
-                }
-});
-
-const btnIncenseVespers: Button = new Button(
-        {
-                btnID: 'btnIncenseVespers',
-                label: {
-                        AR: "بخور عشية",
-                        FR: 'Incense Vespers'
-                },
-                showPrayers: true,
-                prayersArray: PrayersArray,
-                languages: [...prayersLanguages],
-                onClick: (): string[] => {   
-                        (function setBtnChildrenAndPrayers() {
-                                btnIncenseVespers.children = [btnReadingsGospelIncenseVespers];
-        
-                                btnIncenseVespers.prayers = [...IncensePrayers];
-                        })();
-
-                        (function removingNonRelevantLitanies() {
-                                //removing the Sick Litany
-                                btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('  PrayerSickPrayerPart1&D=0000'), 5);
-
-                                //removing the Travelers Litany from IncenseVespers prayers
-                                btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('PrayerTravelersPrayerPart1Date=0000'), 5);
-
-                                //removing the Oblations Litany from IncenseVespers paryers
-                                btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('PrayerOblationsPrayerPart1Date=0000'), 5);
-                                //removing the Dawn Doxology for St. Mary
-                                btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('PrayerDoxologyDawnWatesStMary'), 1);
-
-                                //removing the Angels' prayer
-                                btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('PrayerAngelsPrayer&D=0000'), 1);
-
-                        })();
-
-                        (function adaptCymbalVerses() {
-                                //removing the non-relevant Cymbal prayers according to the day of the week: Wates/Adam
-                                if (todayDate.getDay() > 2) {
-                                //we are between Wednesday and Saturday, we keep only the "Wates" Cymbal prayers
-                                        btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf("PrayerCymbalVersesAdam&D=0000"), 1)
-                                
-                                } else {
-                                        //we are Sunday, Monday, or Tuesday. We keep only the "Adam" Cymbal prayers
-                                        btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf("PrayerCymbalVersesWates&D=0000"), 1)
-                                };
-                        })();
-
-                        (function removeEklonominTaghonata() {
-                                //We remove "Eklonomin Taghonata" from the prayers array
-                                if ((Season != Seasons.GreatLent && Season != Seasons.JonahFast) ||(todayDate.getDay() == 0 || todayDate.getDay() == 6)) {                           
-                                        btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('PrayerGodHaveMercyOnUsRefrainComment&S=GL'), 36); //this is the comment, we remove 36 prayers including the comment
-                                };
-                        })();
-                        return btnIncenseVespers.prayers
-                },
-                afterShowPrayers: async () => {
-                        (async function insertGospelReadings() {
-                                let responses: string[] = setGospelPrayers(Readings.GospelVespers);//this gives us an array like ['PsalmResponse&D=####', 'RGIV', 'GospelResponse&D=####']
-
-                                btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('PrayerGospelPrayerPart2&D=0000') + 1, 0, responses[0]); //inserting Psalm Response id (which corresponds to responses[0])
-
-                                btnIncenseVespers.prayers.splice(btnIncenseVespers.prayers.indexOf('PrayerGospelResponse&D=0000'), 1, responses[2]); //inserting Psalm Response id (which corresponds to responses[0])
-                                
-                                //We create a fake button that we will pass to showPrayers() in order to retrieve the Gospel Text and append it to newDiv
-                                let fakeBtn: Button = new Button({
-                                        btnID: 'fakeGospelReadingBtn',
-                                        label: { AR: '', FR: '' },
-                                        cssClass: inlineBtnClass,
-                                        prayers: [responses[1] + '&D='],
-                                        prayersArray: ReadingsArrays.GospelVespersArray,
-                                        languages: btnReadingsGospelIncenseVespers.languages,
-                                });
-                                let today: Date = new Date(todayDate.getTime() + calendarDay);
-                                let date: string = setSeasonAndCopticReadingsDate(convertGregorianDateToCopticDate(today), today);
-                                fakeBtn.prayers[0] += date;
-                                //We create a new div to which we will append the Gospel
-                                let gospelDiv: HTMLDivElement = document.createElement('div');
-                                gospelDiv.style.display = 'grid';
-                                gospelDiv.style.backgroundColor = 'white';
-                                findAndProcessPrayers(fakeBtn.prayers[0], fakeBtn, gospelDiv);
-
-                                //We will create another div in which we will put the Psalm text
-                                let psalmDiv = document.createElement('div');
-                                psalmDiv.style.backgroundColor = 'white';
-                                if (gospelDiv.children[0] && gospelDiv.children[0].classList.contains('TargetRowTitle')) {
-                                        //If the first child is a div with class 'TargetRowTitle', it means this is the title of the Psalm
-                                        psalmDiv.appendChild(gospelDiv.children[0]); //we append the title to the psalmDiv
-                                        for (let i = 0; i < gospelDiv.children.length; i += 0) {
-                                                //We then loop through the following children of newDiv. If they do not have the class 'TargetRowTitle' it means this is the core text of the Psalm, we append it to the psalmDiv and remove it from the newDiv.
-                                                if (!gospelDiv.children[i].classList.contains('TargetRowTitle')) {
-                                                        psalmDiv.appendChild(gospelDiv.children[i]);
-                                                } else {
-                                                        //If we stumble upon another child div with the class 'TargetRowTitle', this is the title of the gospel itself, we break.
-                                                        break
-                                                }
-                                        }
-
-                                        
-                                };
-
-                                containerDiv.querySelector('div[data-root=\"' + 'PrayerGospelIntroductionPsalmComment&D=0000' + '\"').insertAdjacentElement('afterend', psalmDiv);
-
-                                containerDiv.querySelector('div[data-root=\"' + 'PrayerGospelIntroductionGospelComment&D=0000' + '\"').insertAdjacentElement('afterend', gospelDiv);
-                                
-                                //Setting the number of columns and their widths for the each child of psalmDiv
-                                setCSSGridTemplate(psalmDiv);
-                                
-                                //Setting the number of columns and their widths for the each child of newDiv
-                                setCSSGridTemplate(gospelDiv);
-                        })();
-                }
+    scrollToTop();
+    return btnIncenseVespers.prayersSequence;
+  },
+  afterShowPrayers: async () => {
+    btnIncenseDawn.afterShowPrayers(
+      btnIncenseVespers,
+      Prefix.gospelVespers,
+      ReadingsArrays.GospelVespersArray
+    );
+  },
 });
 
 const btnMassStCyril: Button = new Button({
-        btnID: 'btnMassStCyril',
-        rootID: 'StCyril',
-        label: { AR: "كيرلسي", FR: "Saint Cyril", EN: "St Cyril" },
-        showPrayers: true, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
-        prayersArray: PrayersArray,
-        languages: [...prayersLanguages],
-        onClick: (): string[] => {
-                if (btnsPrayers[btns.indexOf(btnMassStCyril)]) {
-                //if the prayers array of this button had already been set by the async function setButtonsPrayers(), which is called when the app is loaded, then we will not recalculate the paryers array and will use the preset array
-                        btnMassStCyril.prayers = btnsPrayers[btns.indexOf(btnMassStCyril)];
-                        return
-                };
-                //Setting the standard mass prayers sequence
-                btnMassStCyril.prayers = [...MassPrayers.MassCommonIntro, ...MassPrayers.MassStCyril, ...[    "PMCTheHolyBodyAndTheHolyBlodPart3&D=0000", 
-                "PrayerKyrieElieson&D=0000", 
-                "PrayerBlockIriniPassi&D=0000", 
-                "PMCFractionPrayerPlaceholder&D=0000", 
-                "PrayerOurFatherWhoArtInHeaven&D=0000", 
-                "PMCConfession&D=0000", 
-                "PMCConfessionComment&D=0000"], ...MassPrayers.Communion];
-                return btnMassStCyril.prayers
-        },
-        afterShowPrayers: async () => {
-                //Adding 2 buttons to redirect to the St Basil or St Gregory Reconciliation prayer
-                redirectToAnotherMass(containerDiv.children[4].getAttribute('data-root'), [btnMassStBasil, btnMassStGregory, btnMassStJohn], "beforebegin");
+  btnID: "btnMassStCyril",
+  label: { AR: "كيرلسي", FR: "Saint Cyril", EN: "St Cyril" },
+  docFragment: new DocumentFragment(),
+  showPrayers: true, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
+  languages: [...prayersLanguages],
+  onClick: (): string[] => {
+    //Setting the standard mass prayers sequence
+    btnMassStCyril.prayersSequence = [
+      ...MassPrayersSequences.MassStCyril,
+      ...[
+        Prefix.massCommon +
+        "AgiosPart3&D=$copticFeasts.AnyDay",
+        Prefix.commonPrayer + "KyrieElieson&D=$copticFeasts.AnyDay",
+        Prefix.commonPrayer + "BlockIriniPassi&D=$copticFeasts.AnyDay",
+        Prefix.massCommon + "FractionPrayerPlaceholder&D=$copticFeasts.AnyDay",
+        Prefix.commonPrayer + "OurFatherWhoArtInHeaven&D=$copticFeasts.AnyDay",
+        Prefix.massCommon + "Confession&D=$copticFeasts.AnyDay",
+      ],
+      ...MassPrayersSequences.Communion,
+    ];
 
-                //Adding 2 buttons to redirect to the St Basil or St Gregory Anaphora prayer
-                redirectToAnotherMass('PMCAnaphoraComment1&D=0000', [btnMassStBasil, btnMassStGregory], "beforebegin");
-
-                //Adding 2 buttons to redirect to the St Basil or St Gregory Masses After the Spasmos
-                redirectToAnotherMass('PMCSpasmosComment&D=0000', [btnMassStBasil, btnMassStGregory], 'beforebegin');
-
-                scrollToTop();//scrolling to the top of the page
-        
-        }
+    return btnMassStCyril.prayersSequence;
+  },
+  afterShowPrayers: async () => {
+    btnMassStBasil.afterShowPrayers(btnMassStCyril);
+  },
 });
 
 const btnMassStGregory: Button = new Button({
-        btnID: 'btnMassStGregory',
-        rootID: 'StGregory',
-        label: { AR: "غريغوري", FR: "Saint Gregory" },
-        showPrayers: true, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
-        prayersArray: PrayersArray,
-        languages:[...prayersLanguages],
-        onClick: (): string[] => {
-                if (btnsPrayers[btns.indexOf(btnMassStGregory)]) {
-                //if the prayers array of this button had already been set by the async function setButtonsPrayers(), which is called when the app is loaded, then we will not recalculate the paryers array and will use the preset array
-                        btnMassStGregory.prayers = btnsPrayers[btns.indexOf(btnMassStGregory)];
-                        return
-                };
-                //Setting the standard mass prayers sequence
-                btnMassStGregory.prayers = [...MassPrayers.MassCommonIntro, ...MassPrayers.MassStGregory, ...MassPrayers.MassCallOfHolySpirit, ...MassPrayers.MassLitanies, ...MassPrayers.Communion];
+  btnID: "btnMassStGregory",
+  label: { AR: "غريغوري", FR: "Saint Gregory" },
+  docFragment: new DocumentFragment(),
+  showPrayers: true, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
+  languages: [...prayersLanguages],
+  onClick: (): string[] => {
+    //Setting the standard mass prayers sequence
+    btnMassStGregory.prayersSequence = [
+      ...MassPrayersSequences.MassStGregory,
+      ...MassPrayersSequences.MassCallOfHolySpirit,
+      ...MassPrayersSequences.MassLitanies,
+      ...MassPrayersSequences.Communion,
+    ];
 
-                //removing irrelevant prayers from the array
-                btnMassStGregory.prayers.splice(btnMassStGregory.prayers.indexOf('PMCCallOfTheHolySpiritPart1Comment&D=0000'), 10);
-                return btnMassStGregory.prayers
-        },
-        afterShowPrayers: async () => {
-                //Adding 3 buttons to redirect to the St Basil or St Cyril Reconciliation prayer
-                redirectToAnotherMass(containerDiv.children[4].getAttribute('data-root'), [btnMassStBasil, btnMassStCyril, btnMassStJohn], "beforebegin");
+    //removing irrelevant prayers from the array
+    btnMassStGregory.prayersSequence.splice(
+      btnMassStGregory.prayersSequence.indexOf(
+        Prefix.massCommon + "CallOfTheHolySpiritPart1&D=$copticFeasts.AnyDay"
+      ),
+      9
+    );
+    scrollToTop();
 
-                //We add buttons to redirect to the other Reconciliation masses
-                redirectToAnotherMass('PMCAgiosComment1&D=0000', [btnMassStBasil], "beforebegin");
-
-
-                //We add buttons to redirect to St Basil After the Espasmos
-                redirectToAnotherMass('PMCSpasmosComment&D=0000', [btnMassStBasil], "beforebegin");
-                
-                scrollToTop();//scrolling to the top of the page                
-        }
+    return btnMassStGregory.prayersSequence;
+  },
+  afterShowPrayers: async () => {
+    btnMassStBasil.afterShowPrayers(btnMassStGregory);
+  },
 });
 
 const btnMassStBasil: Button = new Button({
-        btnID: 'btnMassStBasil',
-        rootID: 'StBasil',
-        label: { AR: 'باسيلي', FR: 'Saint Basil', EN: 'St Basil' },
-        showPrayers: true, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
-        prayersArray: PrayersArray,
-        languages: [...prayersLanguages],
-        onClick: (): string[] => {
-                if (btnsPrayers[btns.indexOf(btnMassStBasil)]) {
-                        //if the prayers array of this button had already been set by the async function setButtonsPrayers(), which is called when the app is loaded, then we will not recalculate the paryers array and will use the preset array 
-                        
-                        btnMassStBasil.prayers = btnsPrayers[btns.indexOf(btnMassStBasil)];
-                        return
-                };
-                //Setting the standard mass prayers sequence
-                btnMassStBasil.prayers = [...MassPrayers.MassCommonIntro, ...MassPrayers.MassStBasil, ...MassPrayers.MassCallOfHolySpirit, ...MassPrayers.MassLitanies, ...MassPrayers.Communion];
-              
+  btnID: "btnMassStBasil",
+  label: { AR: "باسيلي", FR: "Saint Basil", EN: "St Basil" },
+  docFragment: new DocumentFragment(),
+  showPrayers: true, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
+  languages: [...prayersLanguages],
+  onClick: (): string[] => {
+    //Setting the standard mass prayers sequence
+    btnMassStBasil.prayersSequence = [
+      ...MassPrayersSequences.MassStBasil,
+      ...MassPrayersSequences.MassCallOfHolySpirit,
+      ...MassPrayersSequences.MassLitanies,
+      ...MassPrayersSequences.Communion,
+    ];
+
+    //We scroll to the beginning of the page after the prayers have been displayed
+    scrollToTop();
+    // btnsPrayersSequences.splice(btns.indexOf(btnMassStBasil), 1, btnMassStBasil.prayersSequence);
+    // btnMassStBasil.retrieved = true;
+    return btnMassStBasil.prayersSequence;
+  },
+  afterShowPrayers: async (btn: Button = btnMassStBasil) => {
+    //We create a list of the masses to which we will insert redirection button
+    let redirectToList: Button[] = [
+      btnMassStBasil,
+      btnMassStGregory,
+      btnMassStCyril,
+      btnMassStJohn,
+    ];
+    redirectToList.splice(redirectToList.indexOf(btn), 1); //We remove the btn of the mass from the redirection list
+    redirectToList.splice(redirectToList.indexOf(btnMassStJohn), 1); //We remove the mass of st John
+
+    let btnDocFragment = btn.docFragment;
+
+    (function insertStBasilSecondReconciliationBtn() {
+      if (btn !== btnMassStBasil) return;
+      
+      let secondBasilReconciliation = findTable(
+        Prefix.massStBasil+"Reconciliation2&D=$copticFeasts.AnyDay",
+        MassStBasilPrayersArray);
+
+      if (!secondBasilReconciliation)
+        return console.log("Didn't find reconciliation");
+        
+     
+      let htmlBtn = addExpandablePrayer({
+        insertion: selectElementsByDataSetValue(
+          btnDocFragment,
+          Prefix.massStBasil + "Reconciliation&D=$copticFeasts.AnyDay"
+        )[0].nextElementSibling as HTMLDivElement, //We insert the button after the title
+        btnID: "secondStBasilReconciliation",
+        label:
+        {
+          FR: secondBasilReconciliation[0][2],
+          AR: secondBasilReconciliation[0][4],
+        },
+        prayers: [secondBasilReconciliation],
+        languages: btn.languages,
+      })[0];
+      htmlBtn.addEventListener("click", () => {
+        let dataGroup =
+          Prefix.massStBasil + "Reconciliation&D=$copticFeasts.AnyDay";
+        selectElementsByDataSetValue(containerDiv, dataGroup, undefined, 'group')
+          .forEach((row) => row.classList.toggle(hidden));
+      });
+    })();
+
+    (function addRedirectionButtons() {
+      //Adding 2 buttons to redirect the other masses at the begining of the Reconciliation
+      redirectToAnotherMass(
+        [...redirectToList],
+        {
+          beforeOrAfter: "afterend",
+          el: selectElementsByDataSetValue(
+            btnDocFragment,
+            "Reconciliation&D=$copticFeasts.AnyDay",
+            { includes: true }
+          )[0],
+        },
+        "RedirectionToReconciliation"
+      );
+
+      //Adding 2 buttons to redirect to the other masses at the Anaphora prayer After "By the intercession of the Virgin St. Mary"
+      let select = selectElementsByDataSetValue(
+        btnDocFragment,
+        Prefix.massCommon + "SpasmosAdamShort&D=$copticFeasts.AnyDay",
+        { endsWith: true }
+      );
+      redirectToAnotherMass(
+        [...redirectToList],
+        {
+          beforeOrAfter: "afterend",
+          el: select[select.length - 1],
+        },
+        "RedirectionToAnaphora"
+      );
+
+      //Adding 2 buttons to redirect to the other masses before Agios
+      redirectToAnotherMass(
+        [...redirectToList],
+        {
+          beforeOrAfter: "afterend",
+          el: selectElementsByDataSetValue(
+            btnDocFragment,
+            getMassPrefix(btn.btnID) + "Agios&D=$copticFeasts.AnyDay",
+          )[0].previousElementSibling as HTMLElement,
+        },
+        "RedirectionToAgios"
+      );
+
+      //Adding 2 buttons to redirect to the other masses before the Call upon the Holy Spirit
+      redirectToAnotherMass(
+        [...redirectToList],
+        {
+          beforeOrAfter: "afterend",
+          el: selectElementsByDataSetValue(
+            btnDocFragment,
+            Prefix.massCommon +
+            "AssemblyResponseAmenAmenAmenWeProclaimYourDeath&D=$copticFeasts.AnyDay",
+          )[0],
+        },
+        "RedirectionToLitanies"
+      );
+
+      //Adding 2 buttons to redirect to the other masses before the Fraction Introduction
+      redirectToAnotherMass(
+        [...redirectToList],
+        {
+          beforeOrAfter: "beforebegin",
+          el: selectElementsByDataSetValue(
+            btnDocFragment,
+            "FractionIntroduction&D=$copticFeasts.AnyDay",
+            { includes: true }
+          )[0],
+        },
+        "RedirectionToFractionIntroduction"
+      );
+    })();
+
+    (function insertAdamAndWatesSpasmos() {
+      //We insert it during the Saint Mary Fast and on every 21th of the coptic month
+      let spasmosTitle: string = Prefix.massCommon + "SpasmosAdamLong";
+
+      let anchorTitle = Prefix.massCommon + "DiaconResponseKissEachOther&D=$copticFeasts.AnyDay";
+
+      insertSpasmos(
+        spasmosTitle,
+        selectElementsByDataSetValue(btnDocFragment, anchorTitle)[0]
+      );
+      anchorTitle = Prefix.massCommon + "SpasmosWatesShort&D=$copticFeasts.AnyDay"
+      //Insert Wates Spasmoses
+      insertSpasmos(
+        spasmosTitle.replace("Adam", "Wates"),
+        selectElementsByDataSetValue(btnDocFragment, anchorTitle)[0],
+        true
+      );
+    })();
+
+    function insertSpasmos(
+      spasmosTitle: string,
+      anchor: HTMLElement,
+      hideAnchor: boolean = false
+    ): HTMLElement | void {
+      if (!anchor) return console.log('anhcor is not valid');
+
+      let spasmos: string[][] = MassCommonPrayersArray.find(
+        (tbl) =>
+          tbl[0][0].startsWith(spasmosTitle) &&
+          isMultiDatedTitleMatching(tbl[0][0], Season)
+      );
+
+      if (!spasmos)
+        return console.log("didn't find spasmos with title = ", spasmosTitle);
 
 
-                return btnMassStBasil.prayers;
-        }, 
-        afterShowPrayers: async () => {
-                
-                //We add buttons to redirect to the other Reconciliation masses
-                redirectToAnotherMass(containerDiv.children[4].getAttribute('data-root'),  [btnMassStGregory, btnMassStCyril, btnMassStJohn], "beforebegin");
-                
-                //We scroll to the beginning of the page after the prayers have been displayed
-                scrollToTop()
+      let createdElements = addExpandablePrayer({
+        insertion: anchor,
+        btnID: spasmosTitle.split("&D=")[0],
+        label: {
+          FR: spasmos[0][2],
+          AR: spasmos[0][4],
+        },
+        prayers: [spasmos],
+        languages: btn.languages,
+      });
 
-        }
+      if (hideAnchor)
+        createdElements[0].addEventListener("click", () =>
+          selectElementsByDataSetValue(containerDiv, anchor.dataset.root).forEach((row) => row.classList.toggle(hidden))
+        );
+    }
+
+    (function insertLitaniesIntroductionFromOtherMasses() {
+      if (btn !== btnMassStBasil) return; //This button appears only in St Basil Mass
+
+      let litaniesIntro =
+        findTable(
+          Prefix.massStGregory + "LitaniesIntroduction",
+          MassStGregoryPrayersArray,
+          { startsWith: true }
+        ) || undefined;
+
+      if (!litaniesIntro)
+        return console.log("Did not find the Litanies Introduction");
+
+      let anchor = selectElementsByDataSetValue(
+        btnDocFragment,
+        Prefix.massCommon + "LitaniesIntroduction&D=$copticFeasts.AnyDay")[0];
+
+      if (!anchor) return console.log("Di not find the Anchor");
+
+      let createdElements = addExpandablePrayer({
+        insertion: anchor,
+        btnID: "btnStGregoryLitaniesIntro",
+        label: {
+          AR: "طلبات القداس الغريوري",
+          FR: "Litanies de St. Gregory",
+        },
+        prayers: [litaniesIntro],
+        languages: btn.languages,
+      });
+      //Adding the St Cyril Litanies Introduction to the St. Basil Mass only. St Gregory Mass has its own intro, and we do not of course add it to St Cyrill since it is already included
+
+      litaniesIntro = findTable(
+        Prefix.massStCyril + "LitaniesIntroduction",
+        MassStCyrilPrayersArray,
+        { startsWith: true }
+      ) as string[][];
+
+      if (!litaniesIntro.length)
+        console.log("Did not find the St Cyril Litanies Introduction");
+
+      if (litaniesIntro) {
+        litaniesIntro = structuredClone(litaniesIntro).splice(
+          litaniesIntro.length - 1,
+          1
+        ); //We remove the last row in the table of litaniesIntro because it is the "As it were, let it always be.../كما كان هكذا يكون/tel qu'il fût ainsi soit-il..."
+      }
+
+      //We will create the expandable div and its button, but will append the button to the div
+      let btnsDiv = createdElements[0].parentElement as HTMLDivElement;
+      btnsDiv.appendChild(
+        addExpandablePrayer({
+          insertion: anchor,
+          btnID: "btnStCyrilLitaniesIntro",
+          label: {
+            AR: "طلبات القداس الكيرلسي",
+            FR: "Litanies de la messe de Saint Cyril",
+          },
+          prayers: [litaniesIntro],
+          languages: btnMassStCyril.languages,
+        })[0] //this is the buton created by addExpandablePrayer
+      );
+
+      //We add to each button a 'click' event listner that will hide the other litanies
+      Array.from(btnsDiv.children).forEach((child) =>
+        child.addEventListener("click", () => toggleOtherLitanies(child.id))
+      );
+
+      btnsDiv.style.gridTemplateColumns = setGridColumnsOrRowsNumber(
+        btnsDiv,
+        3
+      );
+
+      function toggleOtherLitanies(btnID: string) {
+        let div = Array.from(containerDiv.querySelectorAll(".Expandable")).find(
+          (btn) => btn.id.includes("LitaniesIntro") && !btn.id.startsWith(btnID)
+        );
+
+        if (div && !div.classList.contains(hidden)) div.classList.add(hidden);
+      }
+    })();
+
+    (function removeNonRelevantSeasonalLitany() {
+      let seasonal = Array.from(
+        btnDocFragment.querySelectorAll(".Row")
+      ) as HTMLDivElement[];
+      seasonal = seasonal.filter((row) =>
+        row.dataset.root.includes("SeasonalLitanyOf")
+      );
+      let dataRoot: string;
+      if (closingHymn.Season === closingHymnAll[0].Season)
+        dataRoot = "SeasonalLitanyOfThe" + closingHymn.Season; //River
+      else if (closingHymn.Season === closingHymnAll[1].Season)
+        dataRoot = "SeasonalLitanyOfThe" + closingHymn.Season; //Plants
+      else if (closingHymn.Season === closingHymnAll[2].Season)
+        dataRoot = "SeasonalLitanyOfThe" + closingHymn.Season; //Hervest
+
+      seasonal
+        .filter((row) => !row.dataset.root.includes(dataRoot))
+        .forEach((row) => row.remove());
+    })();
+
+    showFractionPrayersMasterButton(
+      btn,
+      Array.from(btnDocFragment.children)
+        .find(child => child.id && child.id.startsWith(Prefix.massCommon + "FractionPrayerPlaceholder&D=$copticFeasts.AnyDay")) as HTMLElement,
+      { AR: "صلوات القسمة", FR: "Oraisons de la Fraction" },
+      "btnFractionPrayers",
+      FractionsPrayersArray
+    );
+
+    (function insertCommunionChants() {
+      //Inserting the Communion Chants after the Psalm 150
+      let psalm = selectElementsByDataSetValue(
+        btnDocFragment,
+        Prefix.massCommon + "CommunionPsalm150&D=$copticFeasts.AnyDay"
+      );
+
+      let filtered: string[][][] = CommunionPrayersArray.filter(
+        (tbl) =>
+          isMultiDatedTitleMatching(tbl[0][0], copticDate) === true ||
+          isMultiDatedTitleMatching(tbl[0][0], Season) === true
+      );
+
+      if (filtered.length === 0)
+        filtered = CommunionPrayersArray.filter(
+          (tbl) =>
+            isMultiDatedTitleMatching(tbl[0][0], copticFeasts.AnyDay) === true
+        );
+
+      showMultipleChoicePrayersButton({
+        filteredPrayers: filtered,
+        btn: btn,
+        btnLabels: {
+          AR: "مدائح التوزيع",
+          FR: "Chants de la communion",
+        },
+        masterBtnID: "communionChants",
+        anchor: psalm[psalm.length - 1] as HTMLElement,
+      });
+    })();
+  },
 });
 
 const btnMassStJohn: Button = new Button({
-        btnID: 'btnMassStJohn',
-        label: { AR: 'القديس يوحنا', FR: 'Saint Jean' },
-        showPrayers: false, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
-        prayers:[],
-        onClick: () => {
+  btnID: "btnMassStJohn",
+  label: { AR: "القديس يوحنا", FR: "Saint Jean" },
+  docFragment: new DocumentFragment(),
+  showPrayers: false, //we set it to false in order to escape showing the prayers again after inserting the redirection buttons. The showPrayers() function is called by onClick()
+  prayersSequence: [],
+  onClick: () => {
+    alert(
+      "The prayers of this mass have not yet been added. We hope they will be ready soon"
+    );
+    return; //until we add the text of this mass
 
-                scrollToTop();//scrolling to the top of the page
-        }
+    scrollToTop(); //scrolling to the top of the page
+
+    btnMassStJohn.retrieved = true;
+    return btnMassStJohn.prayersSequence;
+  },
+  afterShowPrayers: async () => {
+    btnMassStBasil.afterShowPrayers(btnMassStJohn);
+  },
 });
-
 
 const goToAnotherMass: Button[] = [
-        new Button({
-                btnID: 'btnGoToStBasilReconciliation',
-                label: { AR: ' باسيلي', FR: ' Saint Basil' },
-                cssClass:inlineBtnClass,
-                onClick: () => {
-                        showChildButtonsOrPrayers(btnMassStBasil);
-                }
-        }),
-        new Button({
-        btnID: 'btnGoToStGregoryReconciliation',
-        label: { AR: 'غريغوري', FR: ' Saint Gregory' },
-        cssClass: inlineBtnClass,
-        onClick: () => {
-                showChildButtonsOrPrayers(btnMassStGregory)
-        }
-}),
-new Button({
-        btnID: 'btnGoToStCyrilReconciliation',
-        label: { AR: 'كيرلسي', FR: 'Saint Cyril' },
-        cssClass: inlineBtnClass,
-        onClick: () => {
-                showChildButtonsOrPrayers(btnMassStCyril)
-        }
-}),
-new Button({
-        btnID: 'btnGoToStJeanReconciliation',
-        label: { AR: 'القديس يوحنا', FR: 'Saint Jean' },
-        cssClass:inlineBtnClass,
-        rootID: 'StJohn',
-        parentBtn: btnMass,
-        onClick: () => {
-                showChildButtonsOrPrayers(btnMassStJohn);
-        }
-})];
-
-const btnMassOfferingOfTheLamb: Button = new Button({
-        btnID: 'btnMassOfferingOfTheLamb',
-        label: { AR: 'تقديم الحمل', FR: "Présentation de l'Agneau" }
-});
-
-const btnMassRoshoumat: Button = new Button({
-        btnID: 'btnMassRoshoumat',
-        label: { AR: 'رشومات الحمل', FR: "Roshoumat El Hamal" }
-});
+  new Button({
+    btnID: "btnGoToStBasilReconciliation",
+    label: { AR: " باسيلي", FR: " Saint Basil" },
+    cssClass: inlineBtnClass,
+    onClick: () => {
+      showChildButtonsOrPrayers(btnMassStBasil);
+    },
+  }),
+  new Button({
+    btnID: "btnGoToStGregoryReconciliation",
+    label: { AR: "غريغوري", FR: " Saint Gregory" },
+    cssClass: inlineBtnClass,
+    onClick: () => {
+      showChildButtonsOrPrayers(btnMassStGregory);
+    },
+  }),
+  new Button({
+    btnID: "btnGoToStCyrilReconciliation",
+    label: { AR: "كيرلسي", FR: "Saint Cyril" },
+    cssClass: inlineBtnClass,
+    onClick: () => {
+      showChildButtonsOrPrayers(btnMassStCyril);
+    },
+  }),
+  new Button({
+    btnID: "btnGoToStJeanReconciliation",
+    label: { AR: "القديس يوحنا", FR: "Saint Jean" },
+    cssClass: inlineBtnClass,
+    parentBtn: btnMass,
+    onClick: () => {
+      showChildButtonsOrPrayers(btnMassStJohn);
+    },
+  }),
+];
 
 const btnMassUnBaptised: Button = new Button({
-        btnID: 'btnMassUnBaptised',
-        label: { AR: 'قداس الموعوظين', FR: 'Messe des non baptisés', EN: 'Unbaptised Mass' },
-        prayers: MassPrayers.MassUnbaptized,
-        prayersArray: PrayersArray,
-        languages: [...prayersLanguages],
-        onClick: () => {
-                //Adding children buttons to btnMassUnBaptised
-                btnMassUnBaptised.children = [btnReadingsStPaul, btnReadingsKatholikon, btnReadingsPraxis, btnReadingsSynaxarium, btnReadingsGospelMass];
+  btnID: "btnMassUnBaptised",
+  label: {
+    AR: "قٌدَّاسِ المَوْعُوظِينَ",
+    FR: "Liturgie du Verbe",
+    EN: "Unbaptised Mass",
+  },
+  docFragment: new DocumentFragment(),
+  showPrayers: true,
+  languages: [...prayersLanguages],
+  onClick: () => {
+    //The prayersArray andprayersSequence must be set when the button is clicked
 
-                //Replacing AllelujaFayBabi according to the day
-                (function replaceAllelujahFayBabi() {
-                        if (isFast) {
-                                //Replace Hellelujah Fay Bibi
-                                btnMassUnBaptised.prayers.splice(btnMassUnBaptised.prayers.indexOf('PMCHallelujahFayBiBi&D=0000'), 1);
-                                if (Season != Seasons.GreatLent && Season != Seasons.JonahFast) {
-                                        //Remove TayShouray
-                                        btnMassUnBaptised.prayers.splice(btnMassUnBaptised.prayers.indexOf('PMCTayshoury&D=0000'), 1)
-                                }
-                        } else {
-                                //Remove 'Hallelujah Ji Efmefi'
-                                btnMassUnBaptised.prayers.splice(btnMassUnBaptised.prayers.indexOf('PMCHallelujahFayBiBiFast&D=0000'), 1);
-                                //Remove Tishoury
-                                btnMassUnBaptised.prayers.splice(btnMassUnBaptised.prayers.indexOf('PMCTishoury&D=0000'), 1)
-                        };
-                })();
+    //Adding children buttons to btnMassUnBaptised
+    btnMassUnBaptised.children = [
+      ...btnDayReadings.onClick(true),
+    ];
 
-                scrollToTop();
-                return btnMassUnBaptised.prayers
+    btnMassUnBaptised.children = btnMassUnBaptised.children.filter(
+      (btn) =>
+        ![
+          btnReadingsGospelIncenseDawn,
+          btnReadingsGospelIncenseVespers,
+          btnReadingsGospelNight,
+          btnReadingsPropheciesDawn,
+        ].includes(btn)
+    );
 
-                }
+    let btnsPrayersSequence = [
+      ...MassPrayersSequences.MassUnbaptized,
+    ];
 
+    (function adaptFaybibiAndTayshoury() {
+
+      btnMassUnBaptised.prayersSequence = adaptHallelujaFayBibiAndTayshoury();
+
+      function adaptHallelujaFayBibiAndTayshoury(): string[] {
+        //If we are not during a fast period or we are during a fast period but today is either Saturday or Sunday, or a Lord Feast, we will remove Hallelujah Ge Evmevi and Tishoury, in order to keep Hallelujah Faybibi and Tayshouri
+        if (!isFast
+          ||
+          [0, 6].includes(weekDay)
+          ||
+          lordFeasts.find(date => [copticDate, copticReadingsDate].includes(date)))
+          return btnsPrayersSequence
+            .filter(title =>
+              ![Prefix.massCommon + "HallelujahFayBiBiFast&D=$copticFeasts.AnyDay", Prefix.massCommon + "Tishoury&D=$copticFeasts.AnyDay"].includes(splitTitle(title)[0]));
+
+        //! If the function did not return before reaching this point, it means that are neccessarily on a fast day (isFast === true). This also necessarily means that we are not on the last day of Jonah Fast, because on this day, isFast is set to false
+
+        if ([Seasons.GreatLent, Seasons.JonahFast].includes(Season)) {
+
+          //We are either during the week days of the Great Lent, or the 3 days of Jonah Fast
+
+          //Replacing "Halleljah Ge Evmevi" with "Halleluja E Ikhon"
+          btnsPrayersSequence[btnsPrayersSequence.indexOf(Prefix.massCommon + "HallelujahFayBiBiFast&D=$copticFeasts.AnyDay")] = Prefix.massCommon + "HallelujahFayBiBi&D=$Seasons.GreatLent";
+        }
+
+        //We will remove 'Hellulja Fay Bibi'and keep only 'Hellulja Ge Evmev'i". We will also remove Tayshoury in order to keep only Tishoury 
+        return btnsPrayersSequence
+          .filter(title =>
+            ![Prefix.massCommon + "HallelujahFayBiBi&D=$copticFeasts.AnyDay", Prefix.massCommon + "Tayshoury&D=$copticFeasts.AnyDay"].includes(splitTitle(title)[0]));
+
+      };
+
+
+    })();
+
+    (function insertHisFoundationsAndIGodHaveMercy() {
+      if (!isFast || ![Seasons.GreatLent, Seasons.JonahFast].includes(Season)) return;//The following only applies during the Great Lent the 3 days of Jonah Fast (not the 4th day) that's why we check if isFast === true
+
+      btnMassUnBaptised.prayersSequence
+        .splice(
+          btnMassUnBaptised.prayersSequence.indexOf(
+            Prefix.massCommon + "AbsolutionForTheFather&D=$copticFeasts.AnyDay") + 1, //We insert it after "Sotis Ameen"
+          0,
+          Prefix.massCommon + "HisFoundations&D=$Seasons.GreatLent",
+          Prefix.incenseDawn + "GodHaveMercyOnUsRefrain&D=$Seasons.GreatLent"
+        );
+
+    })();
+
+    scrollToTop();
+    return btnMassUnBaptised.prayersSequence;
+  },
+  afterShowPrayers: () => {
+    let btnDocFragment = btnMassUnBaptised.docFragment;
+
+    (function hideGodHaveMercyOnUsIfBishop() {
+      let dataRoot =
+        Prefix.commonPrayer +
+        "PrayThatGodHaveMercyOnUs&D=$copticFeasts.AnyDay";
+
+      let godHaveMercyHtml: HTMLDivElement[] = selectElementsByDataSetValue(
+        btnDocFragment,
+        dataRoot,
+        { startsWith: true }
+      ); //We select all the paragraphs not only the paragraph for the Bishop
+
+      godHaveMercyHtml
+        .filter(
+          (div) =>
+            godHaveMercyHtml.indexOf(div) > 0 &&
+            godHaveMercyHtml.indexOf(div) < godHaveMercyHtml.length - 1
+        )
+        .forEach((htmlRow) => htmlRow.remove());
+
+      let godHaveMercy: string[][] = findTable(dataRoot, CommonPrayersArray) as string[][]; //We get the entier table not only the second row. Notice that the first row of the table is the row containing the title
+
+      if (!godHaveMercy)
+        return console.log("Didn't find table Gode Have Mercy");
+
+      addExpandablePrayer({
+        insertion: godHaveMercyHtml[0].nextElementSibling as HTMLDivElement,
+        btnID: "godHaveMercy",
+        label: {
+          AR: godHaveMercy[1][2], //This is the arabic text of the lable
+          FR: godHaveMercy[1][1], //this is the French text of the label
+        },
+        prayers: [godHaveMercy.slice(1, 4)], //We add only the 1st to 3rd rows: the 1st row is a comment from which we retrieved the text for the title, the 2nd and 3rd row is also a comment
+        languages: btnMassUnBaptised.languages,
+        dataGroup: dataRoot,
+      });
+    })();
+
+
+    let readingsAnchor: HTMLElement = selectElementsByDataSetValue(
+      btnDocFragment,
+      Prefix.massCommon + "ReadingsPlaceHolder&D=$copticFeasts.AnyDay"
+    )[0]; //this is the html element before which we will insert all the readings and responses
+
+    (function insertIntercessionsHymns() {
+      let seasonalIntercessions = MassCommonPrayersArray.filter(
+        (table) =>
+          table[0][0].includes("ByTheIntercessionOf") &&
+          (isMultiDatedTitleMatching(table[0][0], copticDate) ||
+            isMultiDatedTitleMatching(table[0][0], Season))
+      );
+      if (seasonalIntercessions.length < 1)
+        return console.log("No Seasonsal Intercession Hymns");
+
+      let stMary = selectElementsByDataSetValue(
+        btnDocFragment,
+        Prefix.massCommon + "ByTheIntercessionOfStMary&D=$copticFeasts.AnyDay");
+
+      if (!stMary) return;
+
+      insertPrayersAdjacentToExistingElement({
+        tables: getUniqueValuesFromArray(
+          seasonalIntercessions.reverse()
+        ) as string[][][],
+        languages: getLanguages(getArrayNameFromArray(MassCommonPrayersArray)),
+        position: {
+          beforeOrAfter: "afterend",
+          el: stMary[stMary.length - 1],
+        },
+        container: btnDocFragment,
+      });
+    })();
+
+    (function insertStPaulReading() {
+      insertMassReading(
+        Prefix.stPaul,
+        ReadingsArrays.StPaulArray,
+        ReadingsIntrosAndEnds.stPaulIntro,
+        ReadingsIntrosAndEnds.stPaulEnd
+      );
+    })();
+
+    (function insertKatholikon() {
+      insertMassReading(
+        Prefix.katholikon,
+        ReadingsArrays.KatholikonArray,
+        ReadingsIntrosAndEnds.katholikonIntro,
+        ReadingsIntrosAndEnds.katholikonEnd
+      );
+    })();
+
+    (function insertPraxis() {
+      (function insertPraxisResponse() {
+        //!Caution, we must start by inserting the Praxis Response before inserting the Praxis reading
+
+        let annualResponseHTML: HTMLElement[] =
+          insertPrayersAdjacentToExistingElement({
+            tables: [
+              findTable(
+                Prefix.praxisResponse + "PraxisResponse&D=$copticFeasts.AnyDay",
+                PraxisResponsesPrayersArray,
+                { equal: true }
+              ) || undefined,
+            ],
+            languages: getLanguages(
+              PrayersArraysKeys.find(
+                (array) => array[2]() === PraxisResponsesPrayersArray
+              )[1]
+            ),
+            position: {
+              beforeOrAfter: "beforebegin",
+              el: readingsAnchor,
+            },
+            container: btnDocFragment,
+          })[0];
+
+        let specialResponse: string[][][] = PraxisResponsesPrayersArray.filter(
+          (table) =>
+            isMultiDatedTitleMatching(table[0][0], copticDate) ||
+            isMultiDatedTitleMatching(table[0][0], Season)
+        );
+
+        if (specialResponse.length === 0)
+          return console.log("Did not find any specific praxis response");
+
+        if (Season === Seasons.GreatLent) {
+          //If a Praxis response was found
+          // The query should yield to  2 tables ('Sundays', and 'Week') for this season. We will keep the relevant one accoding to the date
+          if (weekDay === 0 || weekDay === 6)
+            specialResponse = [
+              specialResponse.find((table) =>
+                table[0][0].includes("Sundays&D=")
+              ),
+            ];
+          else
+            specialResponse = [
+              specialResponse.find((table) => table[0][0].includes("Week&D=")),
+            ];
+        }
+
+        //We insert the special response between the first and 2nd rows
+        let specialResponseHTML = insertPrayersAdjacentToExistingElement({
+          tables: getUniqueValuesFromArray(specialResponse) as string[][][], //We remove duplicates if any
+          languages: prayersLanguages,
+          position: {
+            beforeOrAfter: "beforebegin",
+            el: annualResponseHTML[2], //This is the 'Ek Esmaroot' part of the annual response
+          },
+          container: btnDocFragment,
+        });
+
+        //We move 'Sheri Ne Maria' after the title of the special response
+        specialResponseHTML[0][0].insertAdjacentElement(
+          "afterend",
+          annualResponseHTML[1]
+        );
+
+        //We remove the title of the annual response
+        annualResponseHTML[0].remove();
+      })();
+
+      ///Then we insert the Praxis reading
+      insertMassReading(
+        Prefix.praxis,
+        ReadingsArrays.PraxisArray,
+        ReadingsIntrosAndEnds.praxisIntro,
+        ReadingsIntrosAndEnds.praxisEnd
+      );
+    })();
+
+    (function insertSepcialAgiosIfFeast() {
+      let Agios: string = Prefix.massCommon + "Agios&D=$copticFeasts.";
+
+      if ([copticFeasts.EntryToEgypt, copticFeasts.CanaWedding].includes(copticDate))
+        Agios += Object.entries(copticFeasts).find(entry => entry[1] === copticDate)[0];
+      else if ([copticFeasts.PalmSunday, copticFeasts.Ascension, copticFeasts.Pentecoste].includes(copticReadingsDate))
+        Agios += Object.entries(copticFeasts).find(entry => entry[1] === copticReadingsDate)[0];
+      else if ([Seasons.Nativity, Seasons.Baptism, Seasons.CrossFeast, Seasons.PentecostalDays].includes(Season))
+        Agios = Agios.replace('copticFeasts', 'Seasons') + Object.entries(Seasons).find(entry => entry[1] === Season)[0];
+      else Agios += "AnyDay";
+
+
+      let AgiosTable =
+        findTable(Agios, MassCommonPrayersArray, {
+          equal: true,
+        }) || undefined;
+
+      if (!AgiosTable)
+        return console.log(
+          "Didn't find the special Agios table in PrayersArray"
+        );
+
+      (function adaptToAscension() {
+        if (Season !== Seasons.PentecostalDays || Number(copticReadingsDate.split(Seasons.PentecostalDays)[1]) < 40) return;  //i.e. if we are between the Pentecoste & the Assumption feasts: day 40 to day 49
+        let raisedAndAscended = findTable(Prefix.commonPrayer + "AgiosPart1&D=$copticFeasts.AnyDay", CommonPrayersArray, {
+          equal: true,
+        })[3] as string[]; //This is the 3rd paragraph of the ordinary Agios Osios Hymn ('For He Raised and Ascended to the Heaveans'...etc.)
+
+        if (!raisedAndAscended) return;
+
+        [4, 5, 6].forEach(index => AgiosTable[AgiosTable.length - index] = raisedAndAscended);//Replacing the 3 Agios paragraphs with the Ascension paragraph
+
+      })();
+
+
+      insertPrayersAdjacentToExistingElement({
+        tables: [AgiosTable],
+        languages: getLanguages(getArrayNameFromArray(MassCommonPrayersArray)),
+        position: {
+          beforeOrAfter: "beforebegin",
+          el: readingsAnchor.nextElementSibling as HTMLDivElement,
+        },
+        container: btnDocFragment,
+      });
+
+      //  oldAgios.forEach((div) => div.remove());
+    })();
+
+    (function insertSynaxarium() {
+      let intro = { ...ReadingsIntrosAndEnds.synaxariumIntro };
+      Object.entries(intro)
+        .forEach(entry =>
+          intro[entry[0]] =
+          entry[1]
+            .replace("theday", Number(copticDay).toString())
+            .replace("themonth",
+              copticMonths[Number(copticMonth)][entry[0]]
+            ));
+
+      insertMassReading(
+        Prefix.synaxarium,
+        ReadingsArrays.SynaxariumArray,
+        intro,
+        undefined,
+        copticDate
+      ); //!Caution: we must pass the copticDate for the 'date' argument, otherwise it will be set to the copticReadingsDate by default, and we will get the wrong synaxarium
+
+      //We will reverse the langauges
+      let introHTML = selectElementsByDataSetValue(
+        btnDocFragment,
+        Prefix.synaxarium + "&D=" + copticDate)[1];
+
+      if (!introHTML || introHTML.children.length < 1) return console.log('Didn\'t find the Synaxarium');
+      introHTML.children[0].insertAdjacentElement(
+        "beforebegin",
+        introHTML.children[0]
+      );
+    })();
+
+    (function insertGospelReading() {
+      getGospelReadingAndResponses({
+        liturgy: Prefix.gospelMass,
+        prayersArray: ReadingsArrays.GospelMassArray,
+        languages: getLanguages(
+          PrayersArraysKeys.find((array) => array[0] === Prefix.gospelMass)[1]
+        ),
+        container: btnDocFragment,
+        isMass: true,
+        clearContainer: false,
+      });
+    })();
+
+    (async function insertBookOfHoursButton() {
+      if (
+        [
+          copticFeasts.Resurrection,
+          copticFeasts.Nativity,
+          copticFeasts.Baptism,
+        ].includes(copticReadingsDate)
+      )
+        //In these feasts we don't pray any hour
+        return alert(
+          "We do not pray the Book of Hours prayers on the Ressurection, Nativity (Kiahk 29th), and Baptism (Toubi 11th) feasts' masses"
+        );
+
+      let hoursBtns: Button[] = btnBookOfHours.onClick(true); //We get buttons for the relevant hours according to the day
+      if (!hoursBtns) return;
+
+      hoursBtns = selectRelevantHoursAccordingToTheDay();
+
+      let masterBtnDiv: HTMLDivElement,
+        btnsDiv: HTMLDivElement;
+
+      
+      (function createMasterButton() {
+        masterBtnDiv = document.createElement("div"); //This is the div that will contain the master button which shows or hides the Book of Hours sub buttons
+        masterBtnDiv.classList.add(inlineBtnsContainerClass);
+        masterBtnDiv.id = "masterBOHBtn";
+  
+        btnsDiv = document.createElement("div"); //This is the div that contains the sub buttons for each Hour of the Book of Hours
+        btnsDiv.style.display = "grid";
+        btnsDiv.classList.add(inlineBtnsContainerClass);
+        btnsDiv.classList.add(hidden);
+  
+        let masterBtn = new Button({
+          btnID: "BOH_Master",
+          label: {
+            AR: "الأجبية",
+            FR: "Agpia",
+          },
+          onClick: () => {
+            //We toggle the div containing the buttons for each hour
+            btnsDiv.classList.toggle(hidden);
+            if (btnsDiv.classList.contains(hidden)) {
+              btnsDiv.style.top = "";
+              btnsDiv.style.position = "";
+              createFakeAnchor(btnsDiv.id);
+            }
+          },
+        });
+  
+        masterBtnDiv.prepend(
+          createBtn({
+            btn: masterBtn,
+            btnsContainer: masterBtnDiv,
+            btnClass: inlineBtnClass,
+            clear: true,
+            onClick: masterBtn.onClick,
+          })
+        ); //We add the master button to the bookOfHoursMasterDiv
+      
+        btnDocFragment.prepend(btnsDiv);
+        btnDocFragment.prepend(masterBtnDiv);
+      })();
+
+
+      (function createHtmlButtonForEachHour() {
+        //We will create an HTML div (role = button) and an expandable div for each hour
+        hoursBtns
+          .map((btn) => {
+            btn.onClick(true); //We call the onClick() method of the btn in order to build its prayersSequence properties. Notice that we passs 'true' as argument to the onClick() function
+            
+            if (localStorage.displayMode === displayModes[1])
+              //If we are in the 'Presentation Mode', we remove all the psalms and keep only the Gospel and the Litanies
+              btn.prayersSequence = btn.prayersSequence
+                .filter((title) => !title.includes("Psalm"));
+  
+            InsertHourFinalPrayers(btn); //Inserting Kyrielison 41 times, Agios, Holy God of Sabaot, etc.
+  
+            let btnPrayers: string[][][] =
+              btn.prayersSequence.map(
+                (title) =>
+                  findTable(
+                    title,
+                    getTablesArrayFromTitlePrefix(title)
+                  ) as string[][]
+              ); //We create an array containing all the tables includes in the button's prayersSequence.
+  
+            //We will create an 'expandable' html button and div for the hour button
+            let createdElements: [HTMLElement, HTMLDivElement] =
+              addExpandablePrayer({
+                insertion: btnDocFragment.children[0] as HTMLDivElement,
+                btnID: btn.btnID,
+                label: btn.label,
+                prayers: btnPrayers,
+                languages: btnBookOfHours.languages,
+              }) as [HTMLElement, HTMLDivElement];
+              
+            if (!createdElements[0]) return;
+
+              
+            createdElements[0].onclick = () => hourBtnOnClick(createdElements[0]);//This is the button that will show or hid each hour's button
+
+            btnsDiv.appendChild(createdElements[0]);
+
+            if (!createdElements[1]) return;
+              
+            createdElements[1].dataset.group = createdElements[1].id;
+          
+              
+          });
+        
+        //Finally we set the grid-Template for btnsDiv
+        btnsDiv.style.gridTemplateColumns = setGridColumnsOrRowsNumber(
+          btnsDiv,
+          3);
+      })();
+        
+      function selectRelevantHoursAccordingToTheDay(): Button[] {
+        //args.mass is a boolean that tells whether the button prayersArray should include all the hours of the Book Of Hours, or only those pertaining to the mass according to the season and the day on which the mass is celebrated
+        let hours = [hoursBtns[1], hoursBtns[2], hoursBtns[3]]; //Those are the 3rd, 6th and 9th hours
+
+        if (
+          [
+            Seasons.GreatLent,
+            Seasons.JonahFast,
+            Seasons.NativityParamoun,
+            Seasons.BaptismParamoun,
+          ].includes(Season) &&
+          ![0, 6].includes(weekDay)
+          //We are during the Great Lent or during the Nativity Paramoun or the Baptism Paramoun and today is a Friday. In such cases, we pray the 3rd, 6th, 9th, 11th, and 12th hours
+        )
+          hours.push(hoursBtns[4], hoursBtns[5]);
+        else if (
+          !isFast
+          ||
+          //We remove the 9th hour in the following days/periods
+          [0, 6].includes(weekDay) //Whatever the period, if we are a Saturday or a Sunday, we pray only the 3rd and 6th Hours
+        )
+          hours.pop(); //we remove the 9th hour
+
+        return hours;
+      };
+      
+      async function hourBtnOnClick(hourBtn: HTMLElement) {
+        let expandables = selectElementsByDataSetValue(containerDiv, 'HourExpandable', { endsWith: true }, 'group').filter(div => div.classList.contains('Expandable'));
+        
+        if (expandables.length < 1) return;
+
+        expandables
+          .forEach(expandable =>
+            expandable.id.startsWith(hourBtn.id) ?
+              showOrHideHour(expandable)
+              : hideHour(expandable)
+          );
+
+        function hideHour(expandable: HTMLDivElement) {
+          if (expandable.classList.contains(hidden)) return;
+          
+          expandable.classList.add(hidden);
+
+          Array.from(sideBarTitlesContainer.children).filter((div: HTMLDivElement) => div.dataset.group === expandable.id).forEach(div => div.remove());
+          
+        };
+        
+        async function showOrHideHour(expandable: HTMLDivElement) {
+          (async function showHour() {
+            if (expandable.classList.contains(hidden)) return;
+
+            let children = Array.from(expandable.children) as HTMLDivElement[];
+
+            collapseAllTitles(children);
+
+            let rightSideBarTitles =
+              await showTitlesInRightSideBar(
+                children.filter(div => isTitlesContainer(div)).reverse(),
+                undefined,
+                false,
+                expandable.id,
+                false
+              );
+            
+            rightSideBarTitles.forEach(titleDiv => titleDiv.classList.remove(hidden));
+            makeExpandableButtonContainerFloatOnTop(btnsDiv, "5px");//Making the hours buttons container float on top
+
+            masterBtnDiv.classList.add(hidden); //Hiding the master button
+
+            createFakeAnchor(expandable.id); //Jumbing to the begining of the expandable container
+          })();
+
+          (function hideHour() {
+            if (!expandable.classList.contains(hidden)) return;
+            btnsDiv.style.top = "";
+            btnsDiv.style.position = "";
+            masterBtnDiv.classList.remove(hidden);
+            createFakeAnchor(btnsDiv.id);
+            Array.from(sideBarTitlesContainer.children)
+              .filter((div: HTMLDivElement) => div.dataset.group === expandable.id)
+              .forEach(div => div.remove());
+          })();
+        };
+        
+      };
+
+      function InsertHourFinalPrayers(hourBtn: Button) {
+        let Agios: string =
+          Prefix.commonPrayer + "Agios&D=$copticFeasts.AnyDay",
+          Kyrielison41Times: string =
+            Prefix.commonPrayer + "Kyrielison41Times&D=$copticFeasts.AnyDay",
+          KyrielisonIntro: string = Kyrielison41Times.replace(
+            "&D=",
+            "NoMassIntro&D="
+          ),
+          KyrielisonMassIntro: string = Kyrielison41Times.replace(
+            "&D=",
+            "MassIntro&D="
+          ),
+          HolyLordOfSabaot: string =
+            Prefix.commonPrayer +
+            "HolyHolyHolyLordOfSabaot&D=$copticFeasts.AnyDay",
+          HailToYouMaria: string =
+            Prefix.commonPrayer + "WeSaluteYouMary&D=$copticFeasts.AnyDay",
+          WeExaltYou: string =
+            Prefix.commonPrayer + "WeExaltYouStMary&D=$copticFeasts.AnyDay",
+          Creed: string = Prefix.commonPrayer + "Creed&D=$copticFeasts.AnyDay",
+          OurFatherWhoArtInHeaven: string =
+            Prefix.commonPrayer +
+            "OurFatherWhoArtInHeaven&D=$copticFeasts.AnyDay";
+
+        //!CAUTION, the order of the buttons in hourBtn is reversed (eg.: [9th, 6th, 3rd] instead of [3rd, 6th, 9th])
+
+        let sequence: string[];
+
+        if (hoursBtns.indexOf(hourBtn) === 0) {
+          sequence = [
+            WeExaltYou,
+            Creed,
+            KyrielisonMassIntro,
+            Kyrielison41Times,
+            HolyLordOfSabaot,
+            OurFatherWhoArtInHeaven,
+          ];
+        } else if (hoursBtns.indexOf(hourBtn) === 1) {
+          //this is the before last
+          sequence = [Agios, OurFatherWhoArtInHeaven, HailToYouMaria];
+        } else {
+          //Any other hour before the 2 last
+          sequence = [
+            KyrielisonIntro,
+            Kyrielison41Times,
+            HolyLordOfSabaot,
+            OurFatherWhoArtInHeaven,
+          ];
+        }
+
+        insertCommonPrayer(
+          hourBtn,
+          sequence,
+          hourBtn.prayersSequence.find((title) =>
+            title.includes("HourLitanies&D=")
+          )
+        );
+
+        function insertCommonPrayer(
+          btn: Button,
+          titles: string[],
+          litanies: string
+        ) {
+          if (!titles || titles.length === 0) return console.log("no sequence");
+          btn.prayersSequence.splice(
+            btn.prayersSequence.indexOf(litanies) + 1,
+            0,
+            ...titles
+          );
+        }
+      }
+    })();
+
+    function insertMassReading(
+      readingPrefix: string,
+      readingArray: string[][][],
+      readingIntro: { AR: string; FR: string; EN: string },
+      readingEnd: { AR: string; FR: string; EN: string },
+      date: string = copticReadingsDate
+    ) {
+      let readings,
+        language: string[] = getLanguages(
+          PrayersArraysKeys.find((array) => array[0] === readingPrefix)[1]
+        );
+
+      readings = findMassReadingOtherThanGospel(
+        readingPrefix,
+        readingArray,
+        { beforeOrAfter: "beforebegin", el: readingsAnchor },
+        btnDocFragment,
+        false,
+        date
+      ) as HTMLElement[][];
+
+      if (!readings || readings.length === 0) return;
+
+      if (readingIntro)
+        //We start by inserting the introduction before the reading
+        insertPrayersAdjacentToExistingElement({
+          tables: [
+            [
+              [
+                readings[0][0].dataset.root + "&C=ReadingIntro",
+                readingIntro.AR,
+                readingIntro.FR,
+                readingIntro.EN,
+              ],
+            ],
+          ],
+          languages: ['AR', 'FR', 'EN'],
+          position: { beforeOrAfter: "beforebegin", el: readings[0][1] },
+          container: btnDocFragment,
+        });
+
+      if (readingEnd)
+        //Then we insert the end of the reading
+        insertPrayersAdjacentToExistingElement({
+          tables: [
+            [
+              [
+                readings[0][0].dataset.root + "&C=ReadingEnd",
+                readingEnd.AR,
+                readingEnd.FR,
+                readingEnd.EN,
+              ],
+            ],
+          ],
+          languages: ['AR', 'FR', 'EN'],
+          position: { beforeOrAfter: "beforebegin", el: readingsAnchor },
+          container: btnDocFragment,
+        });
+    }
+  },
 });
 
 const btnMassBaptised: Button = new Button({
-        btnID: 'btnMassBaptised',
-        label: {
-                AR: 'قداس المؤمنين',
-                FR: 'Messe des Croyants',
-                EN: 'Baptized Mass'
-        },
-        parentBtn: btnMass,
-        children: [btnMassStBasil, btnMassStCyril, btnMassStGregory, btnMassStJohn]
-});
-
-const btnMassReadings: Button = new Button({
-        btnID: 'btnMassReadings',
-        label: {
-                AR: 'القراءات',
-                FR: 'Lectures'
-        },
-        prayers: [Readings.StPaul, Readings.Katholikon, Readings.Praxis, Readings.Synaxarium, Readings.GospelMass],
-});
-
-const btnDayReadings: Button = new Button({
-        btnID: 'btnDayReadings',
-        label: { AR: "قراءات اليوم", FR: "Lectures du jour", EN: 'Day\'s Readings' },
-        onClick: () =>
-        {
-                        //We set the btnDayReadings.children[] property
-                        btnDayReadings.children = [btnReadingsGospelIncenseVespers, btnReadingsGospelIncenseDawn, btnReadingsStPaul, btnReadingsKatholikon, btnReadingsPraxis, btnReadingsGospelMass];
-                if (Season == Seasons.GreatLent && todayDate.getDay() != 6) {
-                //we are during the Great Lent and we are not a Saturday
-                        if (btnDayReadings.children.indexOf(btnReadingsGospelIncenseVespers) > -1) {
-                                //There is no Vespers office: we remove the Vespers Gospel from the list of buttons
-                                btnDayReadings.children.splice(btnDayReadings.children.indexOf(btnReadingsGospelIncenseVespers), 1);
-                        };
-                        //If, in additon, we are not a Sunday (i.e., we are during any week day other than Sunday and Saturday), we will  add the Prophecies button to the list of buttons
-                        if (todayDate.getDay() != 0) {
-                                //We are not a Sunday:
-                                if (btnDayReadings.children.indexOf(btnReadingsPropheciesDawn) == -1) {
-                                        btnDayReadings.children.unshift(btnReadingsPropheciesDawn)
-                                };
-                                //since we  are not a Sunday, we will also remove the Night Gospel if included
-                                if (btnDayReadings.children.indexOf(btnReadingsGospelNight) > -1) {
-                                        btnDayReadings.children.splice(btnDayReadings.children.indexOf(btnReadingsGospelNight), 1)
-                                };
-                        } else if (todayDate.getDay() == 0) {
-                                //However, if we are a Sunday, we add the Night Gospel to the readings list of buttons
-                                if (btnDayReadings.children.indexOf(btnReadingsGospelNight) == -1) {
-                                // (we do not add it to the Unbaptized mass menu because it is not read during the mass)
-                                btnDayReadings.children.push(btnReadingsGospelNight);}; 
-                };
-        };
-             
-        }
-});
-
-const btnReadingsStPaul: Button = new Button({
-        btnID: 'btnReadingsStPaul',
-        label: {
-                AR: 'البولس',
-                FR: 'Epître de Saint Paul',
-                EN: 'Pauline Epistle'
-        },
-        showPrayers: true,
-        prayers: [Readings.StPaul],
-        prayersArray: ReadingsArrays.StPaulArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
-});
-const btnReadingsKatholikon: Button = new Button({
-        btnID: 'btnReadingsKatholikon',
-        label: {
-                AR: 'الكاثوليكون',
-                FR: 'Katholikon'
-        },
-        showPrayers: true,
-        prayers: [Readings.Katholikon],
-        prayersArray: ReadingsArrays.KatholikonArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
-});
-
-const btnReadingsPraxis: Button = new Button({
-        btnID: 'btnReadingsPraxis',
-        label: {
-                AR: 'الإبركسيس',
-                FR: 'Praxis'
-        },
-        showPrayers: true,
-        prayers: [Readings.Praxis],
-        prayersArray: ReadingsArrays.PraxisArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
-});
-
-const btnReadingsSynaxarium: Button = new Button({
-        btnID: 'btnReadingsSynaxarium',
-        label: {
-                AR: 'السنكسار',
-                FR: 'Synaxarium'
-        },
-        showPrayers: true,
-        prayers: [Readings.Synaxarium],
-        prayersArray: ReadingsArrays.SynaxariumArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
-});
-
-const btnReadingsGospelMass: Button = new Button({
-        btnID: 'btnReadingsGospelMass',
-        label: {
-                AR: 'إنجيل القداس',
-                FR: 'l\'Evangile',
-                EN: 'Gospel'
-        },
-        showPrayers: true,
-        prayers: setGospelPrayers(Readings.GospelMass),
-        prayersArray: ReadingsArrays.GospelMassArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
+  btnID: "btnMassBaptised",
+  label: {
+    AR: "قٌدَّاسِ المُؤْمِنينَ",
+    FR: "Liturgie des Croyants",
+    EN: "Baptized Mass",
+  },
+  parentBtn: btnMass,
+  children: [btnMassStBasil, btnMassStGregory, btnMassStCyril], //We are removing Mass StJohn for now
 });
 
 const btnReadingsGospelIncenseVespers: Button = new Button({
-        btnID: 'btnReadingsGospelIncenseVespers',
-        label: {
-                AR: 'إنجيل عشية',
-                FR: 'Evangile  Vêpres',
-                EN: 'Vespers Gospel'
-        },
-        showPrayers: true,
-        prayers: [Readings.GospelVespers + '&D='],
-        prayersArray: ReadingsArrays.GospelVespersArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                let today: Date = new Date(todayDate.getTime() + calendarDay); //We create a date corresponding to the  the next day. This is because in the PowerPoint presentations from which the gospel text was retrieved, the Vespers gospel of each day is linked to the day itself not to the day before it: i.e., if we are a Monday and want the gospel that will be read in the Vespers incense office, we should look for the Vespers gospel of the next day (Tuesday). 
-                let date: string = setSeasonAndCopticReadingsDate(convertGregorianDateToCopticDate(today), today);
-                btnReadingsGospelIncenseVespers.prayers[0] += date;
-                scrollToTop();//scrolling to the top of the page
-        }
+  btnID: "btnReadingsGospelIncenseVespers",
+  label: {
+    AR: "إنجيل عشية",
+    FR: "Evangile  Vêpres",
+    EN: "Vespers Gospel",
+  },
+  showPrayers: true,
+  onClick: () => {
+    btnReadingsGospelIncenseDawn.onClick(Prefix.gospelVespers);
+  },
 });
 
 const btnReadingsGospelIncenseDawn: Button = new Button({
-        btnID: 'btnReadingsGospelIncenseDawn',
-        label: {
-                AR: 'إنجيل باكر',
-                FR: 'Evangile Aube',
-                EN: 'Gospel Dawn'
-        },
-        showPrayers: true,
-        prayers: setGospelPrayers(Readings.GospelDawn),
-        prayersArray: ReadingsArrays.GospelDawnArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
+  btnID: "btnReadingsGospelIncenseDawn",
+  label: {
+    AR: "إنجيل باكر",
+    FR: "Evangile Aube",
+    EN: "Gospel Dawn",
+  },
+  showPrayers: true,
+  onClick: (gospelPrefix: string = Prefix.gospelDawn) => {
+    let prayersArray: [string, string, Function] = PrayersArraysKeys.find((entry) => entry[0] === gospelPrefix);
+
+    if (!prayersArray) return console.log("Didn\'t find the prayersArray");
+
+    containerDiv.innerHTML = "";
+
+    getGospelReadingAndResponses({
+      liturgy: gospelPrefix,
+      prayersArray: prayersArray[2](),
+      languages: getLanguages(prayersArray[1]),
+      container: containerDiv,
+      isMass: false,
+      clearContainer: true,
+    });
+    scrollToTop(); //scrolling to the top of the page
+  },
 });
 
 const btnReadingsGospelNight: Button = new Button({
-        btnID: 'btnReadingsGospelNight',
-        label: {
-                AR: 'إنجيل المساء',
-                FR: 'Evangile Soir',
-                EN: 'Vespers Gospel'
-        },
-        showPrayers: true,
-        prayers: setGospelPrayers(Readings.GospelNight),
-        prayersArray: ReadingsArrays.GospelNightArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
-        }
+  btnID: "btnReadingsGospelNight",
+  label: {
+    AR: "إنجيل المساء",
+    FR: "Evangile du Soir",
+    EN: "Night Gospel",
+  },
+  showPrayers: true,
+  prayersSequence: [
+    Prefix.gospelNight + "Psalm",
+    Prefix.gospelNight + "Gospel",
+  ],
+  onClick: () => {
+    btnReadingsGospelIncenseDawn.onClick(Prefix.gospelNight);
+  },
 });
 
 const btnReadingsPropheciesDawn: Button = new Button({
-        btnID: 'btnReadingsPropheciesDawn',
+  btnID: "btnReadingsPropheciesDawn",
+  label: {
+    AR: "نبوات باكر",
+    FR: "Propheties Matin",
+  },
+  showPrayers: true,
+  onClick: () => {
+    findMassReadingOtherThanGospel(
+      Prefix.propheciesDawn,
+      ReadingsArrays.PropheciesDawnArray,
+      { beforeOrAfter: undefined, el: undefined },
+      containerDiv,
+      true
+    );
+    scrollToTop(); //scrolling to the top of the page
+  },
+});
+
+const btnDayReadings: Button = new Button({
+  btnID: "btnDayReadings",
+  label: {
+    AR: "قراءات اليوم",
+    FR: "Lectures du jour",
+    EN: "Day's Readings",
+  },
+  onClick: ( returnBtnChildren:boolean = false) => {
+    //We set the button's children
+    btnDayReadings.children = [
+      btnReadingsGospelIncenseDawn,
+      btnReadingsGospelIncenseVespers,
+      new Button({
+        btnID: "btnReadingsStPaul",
         label: {
-                AR: "نبوات باكر",
-                FR: 'Propheties Matin'
+          AR: "البولس",
+          FR: "Epître de Saint Paul",
+          EN: "Pauline Epistle",
         },
         showPrayers: true,
-        parentBtn: btnIncenseDawn,
-        prayers: [Readings.PropheciesDawn],
-        prayersArray: ReadingsArrays.PropheciesDawnArray,
-        languages: [...readingsLanguages],
-        onClick: () => {
-                scrollToTop();//scrolling to the top of the page
+        onClick: (returnBtnChildren:boolean = false) => {
+          if (returnBtnChildren) return;
+          findMassReadingOtherThanGospel(
+            Prefix.stPaul,
+            ReadingsArrays.StPaulArray,
+            { beforeOrAfter: undefined, el: undefined },
+            containerDiv,
+            true
+          );
+
+          scrollToTop(); //scrolling to the top of the page
+        },
+      }),
+      new Button({
+        btnID: "btnReadingsKatholikon",
+        label: {
+          AR: "الكاثوليكون",
+          FR: "Katholikon",
+        },
+        showPrayers: true,
+        onClick: (returnBtnChildren:boolean = false) => {
+          if (returnBtnChildren) return;
+          
+          findMassReadingOtherThanGospel(
+            Prefix.katholikon,
+            ReadingsArrays.KatholikonArray,
+            { beforeOrAfter: undefined, el: undefined },
+            containerDiv,
+            true
+          );
+          scrollToTop(); //scrolling to the top of the page
+        },
+      }),
+      new Button({
+        btnID: "btnReadingsPraxis",
+        label: {
+          AR: "الإبركسيس",
+          FR: "Praxis",
+        },
+        showPrayers: true,
+        onClick: (returnBtnChildren:boolean =false) => {
+          if (returnBtnChildren) return;
+          findMassReadingOtherThanGospel(
+            Prefix.praxis,
+            ReadingsArrays.PraxisArray,
+            { beforeOrAfter: undefined, el: undefined },
+            containerDiv,
+            true
+          );
+          scrollToTop(); //scrolling to the top of the page
+        },
+      }),
+      new Button({
+        btnID: "btnReadingsSynaxarium",
+        label: {
+          AR: "السنكسار",
+          FR: "Synaxarium",
+        },
+        showPrayers: true,
+        onClick: function (returnBtnChildren:boolean = false) {
+          if (returnBtnChildren) return;
+          findMassReadingOtherThanGospel(
+            Prefix.synaxarium,
+            ReadingsArrays.SynaxariumArray,
+            { beforeOrAfter: undefined, el: undefined },
+            containerDiv,
+            true,
+            copticDate
+          ); //!CAUTION: notice that we passed to the function the readingDate argument because during the GreatLent period and the Jonah Fast, the copticReadingsDate is formatted like 'GL10', we hence pass the copticDate to prevent the function from searching for the Synaxarium of the day by the copticReadingsDate
+          scrollToTop(); //scrolling to the top of the page
+        },
+      }),
+      new Button({
+        btnID: "btnReadingsGospelMass",
+        label: {
+          AR: "إنجيل القداس",
+          FR: "l'Evangile",
+          EN: "Gospel",
+        },
+        showPrayers: true,
+
+        onClick: (returnBtnChildren:boolean = false) => {
+          if (returnBtnChildren) return;
+          btnReadingsGospelIncenseDawn.onClick(Prefix.gospelMass);
+          scrollToTop(); //scrolling to the top of the page
+        },
+      }),
+    ];
+
+    if (Season === Seasons.HolyWeek) {
+      //We should put here child buttons for the Holy Week prayers and readings
+      let div = document.createElement("div");
+      div.innerText =
+        "We are during the Holy Week, there are no readings, please go to the Holy Week Prayers";
+      containerDiv.appendChild(div);
+      return;
+    }
+
+    (function adaptToGreatLentAndJonahFast() {
+      if (![Seasons.GreatLent, Seasons.JonahFast].includes(Season)) return;
+      if (copticReadingsDate === copticFeasts.Resurrection) return;
+
+      (function ifWeAreNotASaturday() {
+        if (weekDay === 6) return;
+
+        //We remove the Vespers because there are no Vespers during the Great Lent except for Saturday. Also there are no vespers during the Jonah Fast which lasts for 4 days from Monday to Thursday
+        btnDayReadings.children = btnDayReadings.children.filter(
+          (btn) => btn !== btnReadingsGospelIncenseVespers
+        );
+
+        if (Season === Seasons.JonahFast) return; ///The following concerns only the Great Lent
+
+        //If we are a Sunday and the GospelNight button is not included, we will add it.
+        if (
+          weekDay === 0 &&
+          !btnDayReadings.children.includes(btnReadingsGospelNight)
+        )
+          btnDayReadings.children.push(btnReadingsGospelNight);
+
+        (function ifWeAreNotASunday() {
+          if (weekDay === 0) return;
+
+          //If we are not a Sunday (i.e., we are during any week day other than Sunday and Saturday), we will  add the Prophecies button to the list of buttons
+          if (!btnDayReadings.children.includes(btnReadingsPropheciesDawn))
+            btnDayReadings.children.unshift(btnReadingsPropheciesDawn);
+
+          //Also if we  are not a Sunday, we will remove the Night Gospel, if included
+          btnDayReadings.children = btnDayReadings.children.filter(
+            (btn) => btn !== btnReadingsGospelNight
+          );
+        })();
+      })();
+    })();
+
+    if (returnBtnChildren) return btnDayReadings.children;
+  },
+});
+
+const btnBookOfHours: Button = new Button({
+  btnID: "btnBookOfHours",
+  label: { AR: "الأجبية", FR: "Agpia", EN: "Book of Hours" },
+  docFragment: new DocumentFragment(),
+  showPrayers: true,
+  languages: [...prayersLanguages],
+  children: [],
+  onClick: (returnBtnChildren: boolean = false) => {
+    if (btnBookOfHours.children.length > 1) return btnBookOfHours.children;
+
+    let OurFatherWhoArtInHeaven: string =
+      Prefix.commonPrayer + "OurFatherWhoArtInHeaven&D=$copticFeasts.AnyDay",
+      AngelsPrayers: string =
+        Prefix.commonPrayer + "AngelsPrayer&D=$copticFeasts.AnyDay",
+      HailToYouMaria: string =
+        Prefix.commonPrayer + "WeSaluteYouMary&D=$copticFeasts.AnyDay",
+      WeExaltYou: string =
+        Prefix.commonPrayer + "WeExaltYouStMary&D=$copticFeasts.AnyDay",
+      Agios: string =
+        Prefix.commonPrayer + "Agios&D=$copticFeasts.AnyDay",
+      Kyrielison41Times: string =
+        Prefix.commonPrayer + "Kyrielison41Times&D=$copticFeasts.AnyDay",
+      KyrielisonIntro: string = Kyrielison41Times.replace(
+        "&D=",
+        "NoMassIntro&D="
+      ),
+      HolyLordOfSabaot: string =
+        Prefix.commonPrayer + "HolyHolyHolyLordOfSabaot&D=$copticFeasts.AnyDay",
+      Creed: string = Prefix.commonPrayer + "Creed&D=$copticFeasts.AnyDay",
+      AllHoursFinalPrayer: string =
+        Prefix.bookOfHours + "AllHoursFinalPrayer&D=$copticFeasts.AnyDay";
+
+    btnBookOfHours.children = [];
+
+    (function addAChildButtonForEachHour() {
+      Object.entries(bookOfHours).forEach((entry) => {
+        let hourName = entry[0],
+          btnLabel = entry[1][1];
+        let hourBtn = new Button({
+          btnID: "btn" + hourName,
+          label: btnLabel,
+          languages: btnBookOfHours.languages,
+          showPrayers: true,
+          onClick: (isMass: boolean = false) =>
+            hourBtnOnClick(hourBtn, hourName, isMass),
+          afterShowPrayers: () => hourBtnAfterShowPrayer(btnLabel),
+        });
+        btnBookOfHours.children.push(hourBtn);
+      });
+
+      function hourBtnAfterShowPrayer(btnLabel) {
+        let children = Array.from(
+          containerDiv.children as HTMLCollectionOf<HTMLDivElement>
+        ).filter((div) => div.dataset.root);
+
+        children.forEach((htmlRow) =>
+          ["Priest", "Diacon", "Assembly"].forEach((className) =>
+            htmlRow.classList.replace(className, "NoActor")
+          )
+        );
+
+        if (btnLabel !== bookOfHours.VeilHour[1]) return;
+        //If we are in the 'Setar Hour', we need to remove from Psalm 118 all the paragraphs except paragraphs 20, 21, and 22. We will do this by adding a btn.afterShowPlayers function
+        let psalm118 = children.filter((div) =>
+          div.dataset.root.startsWith(Prefix.bookOfHours + "Psalm118")
+        );
+
+        psalm118
+          .filter(
+            (div) => psalm118.indexOf(div) > 0 && psalm118.indexOf(div) < 20
+          )
+          .forEach((div) => div.remove());
+      }
+
+      //Adding the onClick() property to the button
+      function hourBtnOnClick(btn: Button, hourName: string, isMass: boolean) {
+        (function buildBtnPrayersSequence() {
+          //We will add the prayers sequence to btn.prayersSequence[]
+          btn.prayersSequence = Object.entries(bookOfHours)
+            .find((entry) => entry[0] === hourName)[1][0]
+            .map((title) => getSequence("Psalm" + title.toString()));
+
+          btn.prayersSequence.unshift(getSequence(hourName + "Title")); //This is the title of the hour prayer
+
+          ["Gospel", "Litanies"].forEach((title) =>
+            btn.prayersSequence.push(getSequence(hourName + title))
+          );
+
+          //Then, we add the End of all Hours' prayers (ارحمنا يا الله ثم ارحمنا) except for the 1st and 2nd services of the Midnight Prayer
+
+          (function addFinalPrayersToSequence() {
+            if (isMass) return; //!Important: If the onClick() method is called when the button is displayed in the Unbaptised Mass, we do not add anything else to the btn's prayersSequence
+            let btnLable = btn.label,
+              HourIntro: string[] = [
+                Prefix.commonPrayer +
+                "ThanksGivingPart1&D=$copticFeasts.AnyDay",
+                Prefix.commonPrayer +
+                "ThanksGivingPart2&D=$copticFeasts.AnyDay",
+                Prefix.commonPrayer +
+                "ThanksGivingPart3&D=$copticFeasts.AnyDay",
+                Prefix.commonPrayer +
+                "ThanksGivingPart4&D=$copticFeasts.AnyDay",
+                Prefix.bookOfHours + "Psalm50&D=$copticFeasts.AnyDay",
+              ],
+              endOfHourPrayersSequence: string[] = [
+                AngelsPrayers,
+                Agios,
+                OurFatherWhoArtInHeaven,
+                HailToYouMaria,
+                WeExaltYou,
+                Creed,
+                KyrielisonIntro,
+                Kyrielison41Times,
+                HolyLordOfSabaot,
+                OurFatherWhoArtInHeaven,
+                getSequence(hourName + "EndOfHourPrayer"),
+                AllHoursFinalPrayer,
+                OurFatherWhoArtInHeaven,
+              ];
+
+            if (btnLable === bookOfHours.MidNight1Hour[1])
+              HourIntro.push(getSequence(hourName + "WakeUpSonsOfLight")); //We add the 'Wake Up Sons of Light' for the 1st Service of Midnight
+
+            if (btnLable === bookOfHours.TwelvethHour[1])
+              endOfHourPrayersSequence.splice(0, 1); //If it is the 12th (Night) Hour, we remove the Angels Prayer from endOfHourPrayersSequence
+
+            btn.prayersSequence.splice(1, 0, ...HourIntro); //We  add the titles of the HourIntro before the 1st element of btn.prayersSequence[]
+
+            if (btnLable === bookOfHours.MidNight3Hour[1]) {
+              //Removing all the prayers before the Creed (index = 4) and replacing them with other prayers
+              endOfHourPrayersSequence.splice(
+                0,
+                5,
+                Kyrielison41Times,
+                HolyLordOfSabaot,
+                OurFatherWhoArtInHeaven,
+                getSequence(hourName + "2ndGospel")
+              );
+              //Inserting the Priests Absolution at the end
+              endOfHourPrayersSequence.push(
+                getSequence(hourName + "PriestsAbsolution")
+              );
+            }
+
+            if (
+              [
+                bookOfHours.FirstHour[1],
+                bookOfHours.TwelvethHour[1],
+                bookOfHours.MidNight3Hour[1],
+              ].includes(btnLable)
+            ) {
+              //If it is the 1st hour (Dawn) or the 12th Hour (Nighth) prayer: We add the End Of Hour Prayers
+              btn.prayersSequence.push(...endOfHourPrayersSequence);
+            } else {
+              //If its is not the 1st Hour (Dawn) or the 12th Hour (Night), we insert only Kyrielison 41 times, and "Holy Lord of Sabaot" and "Our Father Who Art In Heavean"
+              btn.prayersSequence.push(
+                KyrielisonIntro,
+                Kyrielison41Times,
+                HolyLordOfSabaot,
+                OurFatherWhoArtInHeaven
+              );
+            }
+          })();
+        })();
+        function getSequence(replaceWith: string): string {
+          return (
+            Prefix.bookOfHours +
+            "&D=$copticFeasts.AnyDay".replace("&D=", replaceWith + "&D=")
+          );
         }
+      }
+    })();
+
+    if (returnBtnChildren) return btnBookOfHours.children;
+
+    scrollToTop();
+    return btnBookOfHours.prayersSequence;
+  },
 });
 
-const btnHeteneyat: Button = new Button({
-        btnID: 'btnHeteneyat',
-        label: { AR: 'الهيتنيات', FR: 'Heteneyat' }
+const btnPsalmody: Button = new Button({
+  btnID: "btnPsalmody",
+  label: {
+    AR: "الإبصلمودية السنوية",
+    FR: "Psalmodie",
+  },
+  languages: [...prayersLanguages],
+  showPrayers: true,
+  onClick: () => {
+    btnPsalmody.prayersSequence = PsalmodyPrayersSequences.PsalmodyYear;
+
+    if (Season === Seasons.KiahkWeek1 || Season === Seasons.KiahkWeek2)
+      btnPsalmody.prayersSequence = PsalmodyPrayersSequences.PsalmodyKiahk;
+  },
 });
-
-const btnPraxisResponse: Button = new Button({
-        btnID: 'btnPraxisResponse',
-        label: { AR: 'مرد الإبركسيس', FR: 'Réponse Praxis' }
-});
-
-const btnMassGospelResponse: Button = new Button({
-        btnID: 'btnMassGospelResponse',
-        label: { AR: 'مرد الإنجيل', FR: 'Réponse Evangile' }
-});
-
-
 
 /**
- * takes a liturgie name like "IncenseDawn" or "IncenseVespers" and replaces the word "Mass" in the buttons gospel readings prayers array by the name of the liturgie. It also sets the psalm and the gospel responses according to some sepcific occasions (e.g.: if we are the 29th day of a coptic month, etc.) 
+ * Fetchs and displaying any readings other than the Gospel and the Psalm
+ * @param {string} readingPrefix
+ * @param {string[][][]} readingArray - The array where the reading's texts are to be found
+ * @param {HTMLElement} container - The container where the text will be displayed after fetched
+ * @param {boolean} clearContainer - specifies whether the container should be cleared or not before the reading is displayed
+ * @returns
+ */
+function findMassReadingOtherThanGospel(
+  readingPrefix: string,
+  readingArray: string[][][],
+  position: { beforeOrAfter: InsertPosition; el: HTMLElement },
+  container: HTMLElement | DocumentFragment = containerDiv,
+  clearContainer: boolean = false,
+  readingDate?: string
+): HTMLElement[][] | void {
+  //@ts-ignore
+  if (clearContainer) container.innerHTML = "";
+  if (container.children.length === 0)
+    container.appendChild(document.createElement("div"));
+  if (!position.el) position.el = container.children[0] as HTMLElement;
+  if (!position.beforeOrAfter) position.beforeOrAfter = "beforebegin";
+  if (!readingDate) readingDate = copticReadingsDate;
+
+  let reading = readingArray.find((table) => isMultiDatedTitleMatching(splitTitle(table[0][0])[0], readingDate));
+
+  if (!reading)
+    return console.log(
+      "Did not find a reading for the current copticReadingsDate"
+    );
+  return insertPrayersAdjacentToExistingElement({
+    tables: [reading],
+    languages: getLanguages(
+      PrayersArraysKeys.find((array) => array[0] === readingPrefix)[1]
+    ),
+    position: position,
+    container: containerDiv,
+  });
+}
+
+/**
+ * takes a liturgie name like "IncenseDawn" or "IncenseVespers" and replaces the word "Mass" in the buttons gospel readings prayers array by the name of the liturgie. It also sets the psalm and the gospel responses according to some sepcific occasions (e.g.: if we are the 29th day of a coptic month, etc.)
  * @param liturgie {string} - expressing the name of the liturigie that will replace the word "Mass" in the original gospel readings prayers array
  * @returns {string} - returns an array representing the sequence of the gospel reading prayers, i.e., an array like ['Psalm Response', 'Psalm', 'Gospel', 'Gospel Response']
  */
-function setGospelPrayers(liturgie:string): string[] {
-        //this function sets the date or the season for the Psalm response and the gospel response
-        let prayers = [...GospelPrayers],
-                                date: string = '0000';
-        let psalm: number = prayers.indexOf('PrayerPsalmResponse&D='),
-        gospel: number = prayers.indexOf('PrayerGospelResponse&D=');
-        //we replace the word 'Mass' in 'ReadingsGospelMass' by the liturige, e.g.: 'IncenseDawn'
-        prayers[psalm + 1] = prayers[psalm + 1].replace(Readings.GospelMass, liturgie);
-        //setting the psalm and gospel responses
-        if (Number(copticDay) == 29 && Number(copticMonth) != 4) {
-                //we on the 29th of any coptic month except Kiahk (because the 29th of kiahk is the nativity feast)
-                date = '2900'
-                setResponse(psalm, date);
-                setResponse(gospel, date);
-        } else if (Season == Seasons.StMaryFast) {
-                //we are during the Saint Mary Fast. There are diffrent gospel responses for Incense Dawn & Vespers
-                if (todayDate.getHours() < 15) {
-                        prayers[gospel] == prayers[gospel].replace('&D=', 'Dawn&D=');
-                } else {
-                        prayers[gospel] == prayers[gospel].replace('&D=', 'Vespers&D=');
-                };
-                date = Season;
-                setResponse(gospel, date);
-                setResponse(psalm, '0000');
-        } else if (Number(copticMonth) == 4) {
-                // we are during Kiahk month: the first 2 weeks have their own gospel response, and the second 2 weeks have another gospel response
-                checkWhichSundayWeAre(Number(copticDay)) == ('1stSunday' || '2ndSunday') ? date = '&D=041stSunday' : date = '&D=043rdSunday';
-                setResponse(psalm, date);
-                setResponse(gospel, '0000')
-        } else if (Season == Seasons.GreatLent) {
-                //we are during the Great Lent period
-                if (copticReadingsDate == copticFeasts.LazarusSaturday) {
-                                if (todayDate.getHours() < 15) {
-                                        //We are in the morning
-                                        date = copticFeasts.LazarusSaturday
-                                }
-                                else {
-                                        //We are in the Vespers of the Palm Sunday
-                                        date = copticFeasts.PalmSunday;
-                                        prayers[gospel] = prayers[gospel].replace('&D=', 'Vespers&D=');
-                                };
-                        } else if (copticReadingsDate == copticFeasts.EndOfGreatLentFriday && todayDate.getHours() > 15) {
-                                //we are in the Vespers of Lazarus Saturday
-                                prayers[gospel] = prayers[gospel].replace('&D=', 'Vespers&D=')
-                                date = copticFeasts.LazarusSaturday
-                        } else {
-                                todayDate.getDay() == 0 || todayDate.getDay() == 6 ? date = Season + 'Sundays' : date = Season + 'Week';
-                        };
-                        setResponse(gospel, date);
-                        setResponse(psalm, '0000');
-                } else if (
-                        (() => {
-                                let x: number = 0;
-                                Object.keys(copticFeasts).map(
-                                        k => {
-                                                if (copticDate == copticFeasts[k]) {
-                                                        x = 1
-                                                };
-                                        });
-                                return x
-                        })() == 1
-                        || //we check if copticDate = the value of any of the feasts dates in copticFeasts object
-                        [Seasons.JonahFast + '1', Seasons.JonahFast + '2', Seasons.JonahFast + '3', Seasons.JonahFast + '4'].indexOf(copticDate) > -1 //those are the 4 days of the Jonah fast
-                ){
-                        //if coptiDate equals one of the coptic feasts in the copticFeasts object, we set the psalm and gospel prayers to the copticDate
-                        date = copticDate;
-                        setResponse(psalm, date);
-                        setResponse(gospel, date);
-                } else if (Season == Seasons.NoSeason) {
-                       date = '0000';
-                        setResponse(psalm, date);
-                        setResponse(gospel, date);
-                };
-        function setResponse(index: number, date: string) {
-                        prayers[index] = prayers[index].replace('&D=', '&D=' + date);
-        };
-        return prayers
-};
+function setGospelPrayersSequence(liturgy: string, isMass: boolean): string[] {
+  //this function sets the date or the season for the Psalm response and the gospel response
+  const prayersSequence: string[] = [
+    Prefix.psalmResponse + "&D=$copticFeasts.AnyDay", //This is its default value
+    liturgy + "Psalm&D=",
+    liturgy + "Gospel&D=",
+    Prefix.gospelResponse + "&D=$copticFeasts.AnyDay", //This is its default value
+  ]; //This is the generic sequence for the prayers related to the lecture of the gospel at any liturgy (mass, incense office, etc.). The OnClick function triggered by the liturgy, adds the dates of the readings and of the psalm and gospel responses
 
-let btnsPrayers: string[][] = [];
-let btns: Button[] = [btnIncenseDawn, btnIncenseVespers, btnMassStCyril, btnMassStBasil, btnMassStGregory];
+  if (!isMass) return prayersSequence; //If we are not calling the function within a mass/incense liturgy, we will not need to set the Psalm and Gospel Responses, we will return the prayersSequence array
 
-async function redirectToAnotherMass(id: string, btns: Button[], position: InsertPosition) {     
-        let query: string = 'div[data-root=\''
-        let dataset: string = query + id + '\']';
-        let redirectTo: Button [] = [];
-        btns.map(btn => {
-                let newBtn: Button = new Button({
-                        btnID: 'GoTo' + id + btn.rootID,
-                        label: {
-                                AR: btn.label.AR,
-                                FR: btn.label.FR,
-                        },
-                        cssClass:inlineBtnClass,
-                        onClick: () => {
-                                showChildButtonsOrPrayers(btn);
-                                let target = containerDiv.querySelector(dataset);
-                                if (target) {
-                                        target.id = id;
-                                        createFakeAnchor(target.id)
-                                };
-                        }
-                });
-                redirectTo.push(newBtn);
-        });
-        
-        insertRedirectionButtons(dataset, redirectTo, position);
-};
+  //setting the psalm and gospel responses
+  (function setPsalmAndGospelResponses() {
+    if (Number(copticDay) === 29 && [4, 5, 6].includes(Number(copticMonth)))
+      return; //we are on the 29th of any coptic month except Kiahk (because the 29th of kiahk is the nativity feast), and Touba and Amshir (they are excluded because they precede the annonciation)
+
+    let PsalmAndGospelResponses = PsalmAndGospelPrayersArray.filter(
+      (table) =>
+        isMultiDatedTitleMatching(table[0][0], copticDate) ||
+        isMultiDatedTitleMatching(table[0][0], Season)
+    );
+
+    let psalmResponse = PsalmAndGospelResponses.filter((table) =>
+      table[0][0].startsWith(Prefix.psalmResponse)
+    );
+    let gospelResponse = PsalmAndGospelResponses.filter((table) =>
+      table[0][0].startsWith(Prefix.gospelResponse)
+    );
+
+    if (Season === Seasons.GreatLent) {
+      [0, 6].includes(weekDay)
+        ? (gospelResponse = [
+          gospelResponse.find((table) => table[0][0].includes("Sundays&D=")),
+        ])
+        : (gospelResponse = gospelResponse =
+          [gospelResponse.find((table) => table[0][0].includes("Week&D="))]);
+    } else if (
+      [Seasons.JonahFast, Seasons.StMaryFast].includes(Season)
+      ||
+      [copticFeasts.EndOfGreatLentFriday, copticFeasts.LazarusSaturday,
+      ].includes(copticReadingsDate)
+      ||
+      copticDate === copticFeasts.CanaWedding) {
+      //For these occasions, there are different gospel responses for the Dawn Incense Office, and the Unbaptised Mass. We will filter the results
+
+      let prefix: string = "";
+      if (liturgy === Prefix.gospelDawn) prefix = 'Dawn';
+      if (liturgy === Prefix.gospelMass) prefix = 'Mass';
+
+      if (Season === Seasons.JonahFast) prefix += copticReadingsDate.split(Season)[1];//There are different responses for the Dawn Gospel and the Mass Gospel for each day of the Jonah Fast. We will  add the number of the day of Jonah Fast: eg.: "Mass1&D=Jonah1&C=Title" (for 1st day of the Jonah Fast), Dawn2&D=Jonah2&C=Title", etc.
+
+      (function ifGospelVespers() {
+        //If the liturgy is Vespers incesnse, in some occasions there are specific gospel response for the Vespers
+        if (liturgy !== Prefix.gospelVespers) return;
+
+        if (
+          Season === Seasons.StMaryFast
+          ||
+          [copticFeasts.EndOfGreatLentFriday,
+          copticFeasts.LazarusSaturday,
+          ].includes(copticReadingsDate))
+
+          prefix = 'Vespers';
+      })();
+
+
+      gospelResponse = [
+        gospelResponse.find((table) =>
+          table[0][0].includes(prefix + "&D=")
+        ),
+      ];
+    }
+
+    if (psalmResponse.length > 0 && psalmResponse[0].length > 0)
+      prayersSequence[0] = splitTitle(psalmResponse[0][0][0])[0];
+    if (gospelResponse.length > 0 && gospelResponse[0].length > 0)
+      prayersSequence[3] = splitTitle(gospelResponse[0][0][0])[0];
+  })();
+
+  return prayersSequence;
+}
+
+/**
+ *
+ * @param {HTMLDivElement} targetElement - the html child of containerDiv, in relation to which the newly created div containing the html buttons elements, will be placed according to a given position
+ * @param {Button[]} btns - a list of Button for each we will create an inline redirection html button
+ * @param {InsertPosition} position - an object providing the position where the newly created div containing the html elements, will be placed compared. The div is placed in a position (i.e., the beforeOrAfter property) in relation ton an html element in the containerDiv (el) which is the targetEelement
+ *@param {string} btnsContainerID - the id of the div container to which the html buttons will be appended. This id may be needed to select the div after redirection
+ */
+async function redirectToAnotherMass(
+  btns: Button[],
+  position: { beforeOrAfter: InsertPosition; el: HTMLElement },
+  btnsContainerID: string
+) {
+  if (!position.el) return;
+
+  let redirectTo: Button[] = [];
+  btns.map((btn) => {
+    //for each button in the btns array, we will create a fake Button and will set its onClick property to a function that retrieves the text of the concerned mass
+    let newBtn: Button = new Button({
+      btnID:
+        "GoTo_" +
+        btn.btnID.split("btn")[1] +
+        "_From_" +
+        position.el.dataset.root,
+      label: {
+        AR: btn.label.AR,
+        FR: btn.label.FR,
+      },
+      cssClass: inlineBtnClass,
+      onClick: () => {
+        showChildButtonsOrPrayers(btn); //We simulated as if btn itself has been clicked, which will show all its prayers, children, etc.
+
+        //if there is an element in containerDiv having the same data-root as targetElement
+        if (containerDiv.querySelector("#" + btnsContainerID))
+          createFakeAnchor(btnsContainerID);
+      },
+    });
+    redirectTo.push(newBtn);
+  });
+  insertRedirectionButtons(redirectTo, position, btnsContainerID);
+}
+/**
+ * Scrolls to the top of containerDiv
+ */
 async function scrollToTop() {
-        //We scroll to the beginning of the page after the prayers have been displayed
-        createFakeAnchor(containerDiv.id);
-};
+  //We scroll to the beginning of the page after the prayers have been displayed
+  createFakeAnchor("homeImg");
+}
 
-function getVespersGospel(prayers:string[]):string[] {
-        if (todayDate.getHours() > 15) {
-                let date = new Date(todayDate.getTime() + calendarDay);
-                let readingsDate = setSeasonAndCopticReadingsDate(convertGregorianDateToCopticDate(date));
-                prayers[1] += '&D=' + readingsDate;
-                return prayers;
-        } else {
-                return prayers
-        }
+/**
+ * Retrieves and adds html div elements representing the Gospel Litany, the Gospel and psalm introductions, and the Gospel and Psalm readings for a given liturgy
+ * @param {string} liturgy - the prefix of the liturgie for which we want to retrieve the gospel reading
+ * @param {Button | {prayersArray:string[][][], languages:string[]}} btn - the  button object or any object  having as property a string[][][] containing the the text of the gospel and the psalm, and a string[] containing the languages order of the gospel and psalm readings
+ * @param {HTMLElement | DocumentFragment} container - the html element to which the html elements (i.e. div) containing the gospel will be appended after being created
+ * @param {HTMLElement} gospelInsertionPoint - the html element in relation to which the created html elements will be inserted in the container
+ * @returns
+ */
+async function getGospelReadingAndResponses(args: {
+  isMass: boolean;
+  liturgy: string;
+  prayersArray: string[][][];
+  languages: string[];
+  container?: HTMLElement | DocumentFragment;
+  gospelInsertionPoint?: HTMLElement;
+  clearContainer?: boolean;
+}) {
+  if (!args.container) args.container = containerDiv;
+  if (args.container === containerDiv && args.clearContainer)
+    args.container.innerHTML = "";
+  if (args.container.children.length === 0)
+    args.container.appendChild(document.createElement("div"));
+  if (!args.prayersArray)
+    return console.log(
+      "the button passed as argument does not have prayersArray"
+    );
+
+  if (!args.languages)
+    args.languages = getLanguages(getArrayNameFromArray(args.prayersArray));
+
+  if (!args.gospelInsertionPoint)
+    args.gospelInsertionPoint = selectElementsByDataSetValue(
+      args.container,
+      Prefix.commonPrayer + "GospelPrayerPlaceHolder&D=$copticFeasts.AnyDay")[0];
+
+  //We start by inserting the standard Gospel Litany
+  (function insertGospelLitany() {
+    if (!args.isMass) return;
+    let gospelLitanySequence = [
+      Prefix.commonPrayer + "GospelPrayer&D=$copticFeasts.AnyDay",
+      Prefix.commonPrayer + "GospelIntroduction&D=$copticFeasts.AnyDay",
+    ]; //This is the sequence of the Gospel Prayer/Litany for any liturgy
+
+    let gospelLitanyPrayers = gospelLitanySequence.map((title) =>
+      findTable(title, CommonPrayersArray)
+    ) as string[][][];
+
+    if (!gospelLitanyPrayers || gospelLitanyPrayers.length === 0)
+      return console.log("could not find the gospel litany");
+
+    insertPrayersAdjacentToExistingElement({
+      tables: gospelLitanyPrayers,
+      languages: prayersLanguages,
+      position: {
+        beforeOrAfter: "beforebegin",
+        el: args.gospelInsertionPoint,
+      },
+      container: args.container,
+    });
+  })();
+
+
+
+  if (args.isMass &&
+    new Map(JSON.parse(localStorage.showActors)).get("Diacon") === false)
+    return alert("Diacon Prayers are set to hidden, we cannot show the gospel"); //If the user wants to hide the Diacon prayers, we cannot add the gospel because it is anchored to one of the Diacon's prayers
+
+  let anchorDataRoot =
+    Prefix.commonPrayer + "GospelIntroduction&D=$copticFeasts.AnyDay";
+
+  let gospelIntroduction =
+    selectElementsByDataSetValue(args.container, anchorDataRoot, undefined, 'group')
+      .filter(div => !isCommentContainer(div));//!We do not include the comments because if the user hides them, the index of the elements will change
+
+
+  if (args.isMass && gospelIntroduction.length < 1)
+    return console.log("gospelIntroduction.length = 0 ");
+
+  let prayersSequence: string[] = setGospelPrayersSequence(
+    args.liturgy,
+    args.isMass
+  ); //this gives us an array like ['PR_&D=####', 'RGID_Psalm&D=', 'RGID_Gospel&D=', 'GR_&D=####']
+
+  //We will retrieve the tables containing the text of the gospel and the psalm from the GospeldawnArray directly (instead of call findAndProcessPrayers())
+  let date = copticReadingsDate;
+  if (args.liturgy === Prefix.gospelVespers) {
+    //date = getTomorowCopticReadingDate();
+    //console.log(date);
+  }
+
+  let gospel: string[][][] =
+    args.prayersArray
+      .filter((table) =>
+        isMultiDatedTitleMatching(splitTitle(table[0][0])[0], date));
+
+  if (gospel.length === 0) return console.log("gospel.length = 0"); //if no readings are returned from the filtering process, then we end the function
+
+  /**
+   * Appends the gospel and psalm readings before gospelInsertionPoint(which is an html element)
+   */
+  (function insertPsalmAndGospelReadings() {
+    if (!args.isMass) {
+      //If we are not showing the gospel reading in a Mass context (i.e., if the user is clicking on the 'Day Readings Button' to show the readings of the day). We will create a  div container  to which we will append the reading text. We will append the container div as first element of containerDiv
+      containerDiv.append(document.createElement("div"));
+      args.gospelInsertionPoint = containerDiv.children[0] as HTMLDivElement;//We set args.gospelInsertionPoint as the container div we've just created.
+    }
+    gospel
+      .forEach((table) => {
+        //gospel[] should include 2 tables: the first table is the psalm and its title is like '....Psalm&D=...'. The 2nd is the gospel: its title is like '....Gospel&D=...'.
+
+        let el: HTMLElement; //!We, on purpose, created a new variable for the element before which we will show the reading, in order to keep args.gospelInsertionPoint unchanged because we need it later if we are within a Mass or liturgy context. 
+
+        (function setInsertionPoint() {
+          if (!args.isMass || table[0][0].includes("Gospel&D="))
+            //If we are not displaying the gospel in a Mass or a liturgy context, we don't need to insert the psalm. We will just show the text of the gospel reading itself. Hence, the div element will be same as args.gospelInsertionPoint
+            el = args.gospelInsertionPoint;
+
+          else if (table[0][0].includes("Psalm&D="))
+            //We are within a Mass or liturgy context, and need to display the Psalm. We will hence change the place in which the text will be inserted.
+            el = gospelIntroduction[gospelIntroduction.length - 1];
+        })();
+
+        if (!el) return console.log('The insertion point is not valid');
+
+        function getGospelOrPsalmTable(): string[][] {
+          //! We didn't push the array to the table directly because otherwise it will add a new row to the original table each time we click on the Unbaptised Mass button or the Gospel Reading button
+
+
+          //We will include the gospel end: 'Glory To God Forever' and the Psalm End 'Hallelujah'
+
+
+          if (table[0][0].includes('Gospel&D='))
+            return [...table, getReadingEnd(ReadingsIntrosAndEnds.gospelEnd)]; //We return a copy of the table not the original table in order to avoid modifying the original table.
+          else if (table[0][0].includes('Psalm&D='))
+            return [...table, getReadingEnd(ReadingsIntrosAndEnds.psalmEnd)]; //We return a copy of the table not the original table in order to avoid modifying the original table.
+
+          function getReadingEnd(end: { AR: string; FR: string; EN: string }): string[] {
+            //We will return an array (i.e., a new row in the table) containing the text of the "Gospel End" (Glory to God Forever) in each language. This array needs to be constructed like this: ['Row title', 'End text in Arabic, 'End text in French or whatever other western language', 'End text in English']
+            return [
+              //The first element of the array contains the title of the row
+              Prefix.same + '&C=ReadingEnd', //!Notice that we are giving it as class 'ReadingEnd'
+              //The following elements represent the text of the 'Gospel End' in each language, in the same order as the languages passed in args.languages.
+              ...args.languages
+                .map(lang => end[lang])
+            ];
+
+          };
+        };
+
+        insertPrayersAdjacentToExistingElement({
+          tables: [getGospelOrPsalmTable()],
+          languages: args.languages,
+          position: {
+            beforeOrAfter: "beforebegin",
+            el: el,
+          },
+          container: args.container,
+        });
+      });
+  })();
+
+  (function insertPsalmAndGospelResponses() {
+    if (!args.isMass) return; //If we are not calling the function with a Mass or a liturgy (Unbpaptized Mass, or Incense Dawn/Vespers) context, we will not insert the Gospel and Psalm responses 
+    //Inserting the gospel response
+    insertResponse(3, args.gospelInsertionPoint);
+
+    //We remove the insertion point placeholder
+    args.gospelInsertionPoint.remove();
+
+    let gospelPrayer = selectElementsByDataSetValue(
+      args.container,
+      Prefix.commonPrayer + "GospelPrayer&D=$copticFeasts.AnyDay"); //This is the 'Gospel Litany'. We will insert the Psalm response after its end
+
+    if (!gospelPrayer) return;
+
+    insertResponse(
+      0,
+      gospelPrayer[gospelPrayer.length - 1]
+        .previousElementSibling as HTMLElement
+    ); //Inserting Psalm Response if any
+
+    function insertResponse(index: number, insertion: HTMLElement) {
+      let response: string[][] = PsalmAndGospelPrayersArray.find(
+        (tbl) => splitTitle(tbl[0][0])[0] === prayersSequence[index]
+      ); //!Caution: this must be an '===' search operator not startWith() because otherwise, 'NativitayParamoun' will be selected for the 'Nativity' Season, and 'Baptism Paramoun' might be selected for the 'Baptism' Season if their tables in PrayersArray are before those of the relevant table
+
+      if (!response || response.length === 0) return;
+
+      insertPrayersAdjacentToExistingElement({
+        tables: [response],
+        languages: prayersLanguages,
+        position: {
+          beforeOrAfter: "beforebegin",
+          el: insertion,
+        },
+        container: args.container,
+      });
+    }
+  })();
+
+  /**
+   * Returns the Coptic Date of for the next day. It is mainly needed for the Vespers Gospel
+   */
+  function getTomorowCopticReadingDate(): string {
+    let today: Date = new Date(todayDate.getTime() + calendarDay); //We create a date corresponding to the  the next day. This is because in the PowerPoint presentations from which the gospel text was retrieved, the Vespers gospel of each day is linked to the day itself not to the day before it: i.e., if we are a Monday and want the gospel that will be read in the Vespers incense office, we should look for the Vespers gospel of the next day (Tuesday).
+
+    return getSeasonAndCopticReadingsDate(
+      convertGregorianDateToCopticDate(today.getTime(), false)[1],
+      today
+    ) as string;
+  }
+}
+
+/**
+ * Filters the FractionsPrayersArray and Insert a button (a "Master Button") in the specified place (i.e. the anchor). This button when clicked, opens a panel displaying buttons. Each button represents a Fraction. User choises a prayer by clicking on the button.
+ * @param {Button} - btn
+ * @param {HTMLElement} anchor - the html element after which the "Master Button" will be inserted
+ * @param {typeBtnLabel} lable - the lable of the "Master Button"
+ * @param {string} masterBtnID - the id that will be given to the html element created for the "Master Button"
+ * @param {string[][][]} prayersArray - the array that will be filtered in order to retrieve the prayers that will be displayed by the buttons
+ */
+function showFractionPrayersMasterButton(
+  btn: Button,
+  anchor: HTMLElement,
+  label: typeBtnLabel,
+  masterBtnID: string,
+  prayersArray: string[][][]
+) {
+  let filtered: Set<string[][]> = new Set();
+
+  if (Number(copticDay) === 29 && ![4, 5, 6].includes(Number(copticMonth)))
+    filterPrayersArray(copticFeasts.Coptic29th, prayersArray, filtered); //We start by adding the fraction of the 29th of each coptic month if we are on the 29th of the month
+  //console.log('filteredSet = ', filtered)
+
+  filterPrayersArray(copticDate, prayersArray, filtered); //we then add the fractions (if any) having the same date as the current copticDate
+
+  filterPrayersArray(Season, prayersArray, filtered); //We then add the fractions (if any) having a date = to the current Season
+
+  filterPrayersArray(copticFeasts.AnyDay, prayersArray, filtered); //We finally add the fractions having as date copticFeasts.AnyDay
+
+  function filterPrayersArray(
+    date: string,
+    prayersArray: string[][][],
+    filtered: Set<string[][]>
+  ) {
+    prayersArray.map((table) => {
+      if (!table) return;
+      if (
+        isMultiDatedTitleMatching(table[0][0], date) === true &&
+        !filtered.has(table)
+      )
+        filtered.add(table);
+    });
+  }
+  showMultipleChoicePrayersButton({
+    filteredPrayers: Array.from(filtered),
+    btn: btn,
+    btnLabels: label,
+    masterBtnID: masterBtnID,
+    anchor: anchor,
+  });
+}
+/**
+ * Filters the array containing the gospel text for each liturgie (e.g., Incense Dawn, Vepspers, etc.) and returns the text of the gospel and the psaume. The fil
+ * @param {Button} btn - the button of the liturgie within which we want to show the gospel text and the psaume text
+ * @param {string[][][]} readingsArray - the array containing the text of the gospel and the psaume. Each element of this array repersents a table in the Word document from which the text was retrieved, and each element of each table[], represents a row of this table
+ * @returns {string[][][]} - the result of the filtering operation. This normally returns an array of 2 tables: the first table represents the table of the psaume text, and the 2nd table represents the table of the gospel text
+ */
+function getBtnGospelPrayersArray(btn: Button, readingsArray): string[][][] {
+  let gospel = readingsArray.filter((r) => {
+    splitTitle(r[0][0][0])[0] === btn.prayersSequence[1] ||
+      splitTitle(r[0][0][0])[0] === btn.prayersSequence[2];
+  });
+  return gospel;
+}
+/**
+ * Takes a table title with muliple date values separated by '||', and checks if any of these dates include the date passed to it as coptDate
+ * @param {string} tableTitle - a title of a table including multiple dates separated by '||'
+ * @param {string} coptDate - the date that we want to check if it is included in the title. If omitted, it is given the value of the current copticDate
+ * @returns {boolean} - return true if the date was found, and false otherwise
+ */
+function isMultiDatedTitleMatching(
+  tableTitle: string,
+  coptDate: string = copticDate
+): boolean {
+  if (!tableTitle.includes("&D=")) return false; //This means that the title does not specify any date for the prayer.
+
+  tableTitle = splitTitle(tableTitle)[0].split("&D=")[1];
+
+  return tableTitle
+    .split("||")
+    .map((date) => dateIsRelevant(date, coptDate))
+    .includes(true);
+}
+
+/**
+ * Checks if the date argument matches the copticDate or the Season
+ * @param {string} date - the date string that we want to check if it matches the copticDate or the Season
+ * @param {string} coptDate  - the copticDate (or the Season) with which we want the compare the date
+ * @returns  {boolean}
+ */
+function dateIsRelevant(
+  date: string,
+  coptDate: string = copticDate
+): boolean | void {
+  if (date.startsWith("$")) date = eval(date.replace("$", ""));
+
+  if (!date) return console.log("date is not valid: ", date);
+
+  if (date === Seasons.Kiahk)
+    return [
+      Seasons.KiahkWeek1,
+      Seasons.KiahkWeek2,
+      Seasons.KiahkWeek3,
+      Seasons.KiahkWeek4,
+    ].includes(Season);
+
+  return date === coptDate;
+}
+
+/**
+ * Inserts the Incense Office Doxologies And Cymbal Verses according to the Coptic feast or season
+ * @param {HTMLElement | DocumentFragment} container - The HtmlElement in which the btn prayers are displayed and to which they are appended
+ */
+async function insertCymbalVersesAndDoxologies(btn: Button) {
+  if (!btn.docFragment)
+    return console.log("btn.docFragment is undefined = ", btn.docFragment);
+
+  let dayFeasts: string[] = (() => {
+    let feast: string[] = [];
+    let relevant: [string, string] = Object.entries(copticFeasts).find(
+      (entry) => [copticDate, copticReadingsDate].includes(entry[1])
+    ); //We check if today is a feast. We also check by the copticReadingsDate because some feast are referrenced by the copticReadings date : eg. Pntl39
+
+    if (relevant) feast.push(relevant[1]); //We push the date
+
+    relevant = Object.entries(Seasons).find((entry) => entry[1] === Season); //We check also for the season
+
+    if (Season !== Seasons.NoSeason) feast.push(Season); //We also push the Season
+
+    if (feast.length > 0) return getUniqueValuesFromArray(feast) as string[];
+  })();
+
+  (async function InsertCymbalVerses() {
+    let cymbalsPlaceHolder: HTMLElement = selectElementsByDataSetValue(
+      btn.docFragment,
+      Prefix.commonIncense + "CymbalVersesPlaceHolder&D=$copticFeasts.AnyDay")[0];
+    if (!cymbalsPlaceHolder)
+      return console.log("Didn't find cymbalsPlaceHolder");
+
+    if (!cymbalsPlaceHolder)
+      return console.log("We didn't find the cymbal verses placeholder");
+
+    let sequence = [
+      Prefix.cymbalVerses + "Wates&D=$copticFeasts.AnyDay",
+      Prefix.cymbalVerses + "&D=$copticFeasts.AnyDay",
+    ];
+
+    //If we are during any of the Lord Feasts (or any season where we follow the same pattern), we add "Jesus Christ is the same for ever...",
+    if (
+      [...lordFeasts, copticFeasts.Coptic29th].includes(copticDate) ||
+      [Seasons.Nativity, Seasons.Baptism, Seasons.PentecostalDays].includes(
+        Season
+      )
+    )
+      sequence.push(
+        Prefix.cymbalVerses + "LordFeastsEnd&D=$copticFeasts.AnyDay"
+      );
+
+    if (weekDay > 2) sequence[0] = sequence[0].replace("Wates&D", "Adam&D");
+
+    if (dayFeasts)
+      dayFeasts.forEach((feast) =>
+        [
+          ...lordFeasts,
+          Seasons.Nativity,
+          Seasons.Baptism,
+          Seasons.PentecostalDays,
+        ].includes(feast) //During Seasons.Nativity (i.e., between Nativity and Circumcision) and Seasons.Baptism(from Baptism to Cana Wedding), the Cymbals verses follow the pattern of any Lord Feast: it starts with "Amoyni Marin..." or "Ten O'osht", then the cymbal verses of the feast, and finally, the "Eb'oro enti ti hirini". We will hence remove the 2nd element from the sequence
+          ? insertFeastInSequence(sequence, feast, 1, 1)
+          : insertFeastInSequence(sequence, feast, 1, 0)
+      ); //We always start with 'Amoyni Marin...' or with 'Tin O'osht...', so we will insert the feast element before the 2nd element, and will not delete anything
+
+    let cymbals: string[][][] = processSequence(
+      sequence,
+      CymbalVersesPrayersArray
+    );
+
+    if (cymbals.length < 1)
+      return console.log(
+        "no cymbals were found by the provided sequence: ",
+        sequence
+      );
+
+    insertPrayersAdjacentToExistingElement({
+      tables: getUniqueValuesFromArray(cymbals) as string[][][],
+      languages: btn.languages,
+      position: {
+        beforeOrAfter: "beforebegin",
+        el: cymbalsPlaceHolder.nextElementSibling as HTMLElement,
+      },
+      container: btn.docFragment,
+    });
+  })();
+
+  (async function InsertCommonDoxologies() {
+    let doxologiesPlaceHolder: HTMLElement = selectElementsByDataSetValue(
+      btn.docFragment,
+      Prefix.commonIncense + "DoxologiesPlaceHolder&D=$copticFeasts.AnyDay")[0];
+
+    if (!doxologiesPlaceHolder)
+      return console.log("Didn't find doxologiesPlaceholder");
+
+    if (!doxologiesPlaceHolder) return;
+
+    let sequence: string[] = [
+      Prefix.doxologies + "DawnWatesStMary&D=$copticFeasts.AnyDay",
+      Prefix.doxologies + "StMaykel&D=$copticFeasts.AnyDay",
+      Prefix.doxologies + "HeavenlyBeings&D=$copticFeasts.AnyDay",
+      Prefix.doxologies + "Apostles&D=$copticFeasts.AnyDay",
+      Prefix.doxologies + "StMarc&D=$copticFeasts.AnyDay",
+      Prefix.doxologies + "StGeorge&D=$copticFeasts.AnyDay",
+      Prefix.doxologies + "StMina&D=$copticFeasts.AnyDay",
+      Prefix.doxologies + "EndOfDoxologiesWates&D=$copticFeasts.AnyDay",
+    ];
+
+    if (btn === btnIncenseVespers)
+      sequence[0] = sequence[0].replace("Dawn", "Vespers");
+
+    let excludedFeasts = [
+      saintsFeasts.StMaykel,
+      saintsFeasts.StMarc,
+      saintsFeasts.StGeorge,
+      saintsFeasts.StMina,
+    ]; //Those saints feast will be excluded because the doxologies of those saints are already included by default
+
+    if (dayFeasts) {
+      let index: number = 2;
+      dayFeasts.forEach((feast) => {
+        if (
+          [
+            ...lordFeasts,
+            Seasons.NativityParamoun,
+            Seasons.Nativity,
+            Seasons.BaptismParamoun,
+            Seasons.Baptism,
+            Seasons.KiahkWeek1,
+            Seasons.KiahkWeek2,
+            Seasons.KiahkWeek3,
+            Seasons.KiahkWeek4,
+            Seasons.PentecostalDays,
+          ].includes(feast)
+        )
+          index = 0; //If one of the dates in feast[] corresponds to a one of th 'Lord's Feasts', it means we are in a Lord Feast. the doxologies of the feast will be placed at the begining of the doxologies. We follow the same rule for the doxologies of the PentecostalDays and the month of Kiahk
+        else if (excludedFeasts.includes(feast)) {
+          let feastIndex = sequence.indexOf(feast);
+          sequence.splice(2, 0, sequence[feastIndex]); //If it is one of the doxologies already included by default, we place it after St. Maykel
+          sequence.splice(feastIndex + 1, 1); //We then delete the element itself
+          index = undefined; //We set index to undefined in order to prevent insertFeastSequence from inserting any element in sequence
+        } else if (AngelsFeasts.includes(feast)) index = 1;
+
+        insertFeastInSequence(sequence, feast, index, 0);
+      });
+    }
+
+    let doxologies: string[][][] = processSequence(
+      sequence,
+      DoxologiesPrayersArray
+    );
+
+    if (doxologies.length === 0)
+      return console.log("Did not find any relevant doxologies");
+
+    if (Season === Seasons.GreatLent) {
+      //For the Great Lent, there is a doxology for the Sundays and 4 doxologies for the week days
+      if (weekDay === 0 || weekDay === 6)
+        doxologies = doxologies
+          .filter((tbl) => tbl[0][0].includes("Seasons.GreatLent"))
+          .filter((tbl) => !tbl[0][0].includes("Week"));
+      else
+        doxologies = doxologies
+          .filter((tbl) => tbl[0][0].includes("Seasons.GreatLent"))
+          .filter((tbl) => !tbl[0][0].includes("Sundays"));
+    }
+
+    insertPrayersAdjacentToExistingElement({
+      tables: getUniqueValuesFromArray(doxologies) as string[][][],
+      languages: btn.languages,
+      position: {
+        beforeOrAfter: "beforebegin",
+        el: doxologiesPlaceHolder.nextElementSibling as HTMLElement,
+      },
+      container: btn.docFragment,
+    });
+  })();
+  /**
+   * Inserts a new element in the btn.prayersSequence[]. This elment will serve as a placeholder to insert the relevant prayers (Cymbal Verses or Doxologies) for the current season or feast
+   * @param {string[]} sequence - the btn's prayers sequence in which the new placeholder element will be inserted
+   * @param {string} feastDate - the string representing the feast or the season
+   * @param {number} index - the index at which the new placeholder element will be inserted.
+   */
+  function insertFeastInSequence(
+    sequence: string[],
+    feastDate: string,
+    index: number,
+    remove: number
+  ) {
+    if (!index && index !== 0) return;
+    sequence.splice(index, remove, "&Insert=" + feastDate);
+  }
+
+  /**
+   * Searchs in tablesArray for the tables matching each title in sequence, which is a string[] of titles, and returns a string[][][] of the tables found in the
+   * @param {string[]} sequence - An arry of titles that we will be looking for tables matching each of them in tablesArray[][]
+   * @param {string[][][]} tablesArray - The array containg the text tables in which we will be looking for the tables[][] having titles matching the titles in sequence[]
+   * @returns {string[][][]} - an array of the tables[][] found
+   */
+  function processSequence(sequence: string[], tablesArray: string[][][]) {
+    let tables: string[][][] = [];
+
+    sequence.map((title) => {
+      if (title.startsWith("&Insert="))
+        tablesArray
+          //!CAUTION: we must use 'filter' not 'find' because for certain feasts there are more than one doxology
+          .filter((tbl) =>
+            isMultiDatedTitleMatching(tbl[0][0], title.split("&Insert=")[1])
+          )
+          .forEach((tbl) => tables.push(tbl));
+      else
+        tables.push(
+          findTable(title, tablesArray, {
+            equal: true,
+          }) as string[][]
+        );
+    });
+
+    return tables;
+  }
+}
+
+async function removeElementsByTheirDataRoot(
+  container = containerDiv,
+  dataRoot: string
+) {
+  selectElementsByDataSetValue(container, dataRoot).forEach((el) =>
+    el.remove()
+  );
+}
+/**
+ * Adds a button that when clicked shows or hides certain prayers from containerDiv
+ * @param {HTMLElement} insertion - the html element before which the button will be inserted
+ * @param {string} btnID - the id of the html element button that will be created
+ * @param {typeBtnLabel} label - the label of the button that will be created
+ * @param {string[][][]} prayers - the prayers that will shown or hidden or shown
+ * @returns {HTMLDivElement} - the created div element that contains the prayers, and will be hidden or shown when the button is clicked
+ */
+function addExpandablePrayer(args: {
+  insertion: HTMLElement;
+  btnID: string;
+  label: typeBtnLabel;
+  prayers: string[][][];
+  languages: string[];
+  dataGroup?: string;
+}): [HTMLElement, HTMLDivElement] | void {
+
+  if (!args.prayers) return console.log('No prayes table nor prayers sequence were provided');
+  if (!args.insertion) return console.log("btnID = ", args.btnID);
+
+  let btnExpand: Button,
+    htmlButton: HTMLElement,
+    expandableContainer: HTMLDivElement;
+
+
+  btnExpand = new Button({
+    btnID: args.btnID,
+    label: args.label,
+    cssClass: inlineBtnClass,
+    languages: args.languages,
+    prayersSequence: args.prayers.map(tbl=>tbl[0][0]),
+    onClick: btnOnClick,
+  });
+
+  return createHtmlBtnAndExpandableDiv();
+
+  function createHtmlBtnAndExpandableDiv(): [HTMLElement, HTMLDivElement] {
+    htmlButton = createHtmlButon(); 
+    expandableContainer = createExpandableContainer();
+    
+    function createHtmlButon() {
+      let btnDiv = createDivForTheHtmlButon();
+
+      let btn = createBtn({
+      btn: btnExpand,
+      btnsContainer: btnDiv,
+      btnClass: btnExpand.cssClass,
+      clear: true,
+      onClick: btnExpand.onClick,
+    }); //creating the html element representing the button. Notice that we give it as 'click' event, the btn.onClick property, otherwise, the createBtn will set it to the default call back function which is showChildBtnsOrPrayers(btn, clear)
+      
+      btn.classList.add("expand"); //We need this class in order to retrieve the btn in Display Presentation Mode
+      return btn;
+
+      function createDivForTheHtmlButon() {
+        let div = document.createElement("div"); //Creating a div container in which the btn will be displayed
+        div.classList.add(inlineBtnsContainerClass);
+      
+        if (args.dataGroup) div.dataset.group = args.dataGroup;
+      
+          args.insertion.insertAdjacentElement("beforebegin", div); //Inserting the div containing the button as 1st element of containerDiv
+          return div
+      };
+    }; 
+    function createExpandableContainer() {
+      //We will create a newDiv to which we will append all the elements in order to avoid the reflow as much as possible
+      let expandable  = document.createElement("div");
+      expandable.id = btnExpand.btnID + "Expandable";
+      expandable.classList.add(hidden);
+      expandable.classList.add("Expandable");
+      expandable.style.display = "grid"; //This is important, otherwise the divs that will be add will not be aligned with the rest of the divs
+      args.insertion.insertAdjacentElement("beforebegin", expandable);
+      return expandable
+    };
+
+
+    //We will create a div element for each row of each table in btn.prayersArray
+
+
+    // let htmlRows = Array.from(prayersContainerDiv.children) as HTMLDivElement[];
+    // htmlRows
+    //   .filter((div) => isTitlesContainer(div))
+    //   .forEach((div) => {
+    //     htmlRows.filter(d => d.dataset.root && d.dataset.root === div.dataset.root)
+    //       .forEach(d => d.dataset.group = div.dataset.root);//We rename the dataset.group attribute for each nested table
+    //   });
+
+    return [htmlButton, expandableContainer];
+  }
+
+  async function btnOnClick(): Promise<HTMLElement[] | void> {
+    if (!expandableContainer) return console.log("no collapsable div was found");
+    
+    (function showPrayersInExpandableDiv() {
+      if (expandableContainer.children.length > 0) return;
+      args.prayers
+        .map(table => {
+          return showPrayers({
+            wordTable: table,
+            languages: args.languages,
+            position: expandableContainer,
+            container: expandableContainer,
+            clearContainerDiv: false,
+            clearRightSideBar: false
+          });
+        })
+        .forEach(htmlTable => setCSS(htmlTable));
+    })();
+
+    (function toggleHideExpandableAndTitles() {
+      expandableContainer.classList.toggle(hidden);
+  
+ /*      expandableContainer.classList.contains(hidden)?
+      hideOrShowAllTitlesInAContainer(expandableContainer, true)
+    : hideOrShowAllTitlesInAContainer(expandableContainer, false);     */  
+    })();
+
+  }
 }
