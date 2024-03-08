@@ -24,11 +24,10 @@ type typeButton = {
 };
 //CONSTANTS
 const version: string =
-  "v5.4.6 (Fixed case when optional prayers not available in the default or foreing language set by the user)";
+  "v5.6.6 (Started working on HolyWeek Passover prayers up to GL55 morning)";
 const calendarDay: number = 24 * 60 * 60 * 1000; //this is a day in milliseconds
 const containerDiv: HTMLDivElement = document.getElementById(
-  "containerDiv"
-) as HTMLDivElement;
+  "containerDiv") as HTMLDivElement;
 const leftSideBar = document.getElementById("leftSideBar") as HTMLDivElement;
 const sideBarBtnsContainer: HTMLDivElement =
   leftSideBar.querySelector("#sideBarBtns");
@@ -42,38 +41,38 @@ const expandableBtnsPannel: HTMLElement = document.getElementById(
   "inlineBtnsContainer"
 );
 const ResurrectionDates: [number, string][] = [
-  [2019, "2022-04-28"],
-  [2020, "2022-04-19"],
-  [2021, "2022-05-02"],
-  [2022, "2022-04-24"],
-  [2023, "2023-04-16"],
-  [2024, "2024-05-05"],
-  [2025, "2025-04-20"],
-  [2026, "2026-04-12"],
-  [2027, "2027-05-02"],
-  [2028, "2028-04-16"],
-  [2029, "2029-04-08"],
-  [2030, "2030-04-28"],
-  [2031, "2030-04-13"],
-  [2032, "2030-05-02"],
-  [2033, "2030-04-24"],
-  [2034, "2030-04-09"],
-  [2035, "2030-04-29"],
-  [2036, "2030-04-20"],
-  [2037, "2030-04-05"],
-  [2038, "2030-04-25"],
-  [2039, "2030-04-17"],
-  [2040, "2030-05-06"],
-  [2041, "2030-04-21"],
-  [2042, "2030-04-13"],
-  [2043, "2030-05-03"],
-  [2044, "2030-04-24"],
-  [2045, "2030-04-09"],
-  [2046, "2030-04-29"],
-  [2047, "2030-04-21"],
-  [2048, "2030-04-05"],
-  [2049, "2030-04-25"],
-  [2050, "2030-04-17"],
+  [2019, "04-28"],
+  [2020, "04-19"],
+  [2021, "05-02"],
+  [2022, "04-24"],
+  [2023, "04-16"],
+  [2024, "05-05"],
+  [2025, "04-20"],
+  [2026, "04-12"],
+  [2027, "05-02"],
+  [2028, "04-16"],
+  [2029, "04-08"],
+  [2030, "04-28"],
+  [2031, "04-13"],
+  [2032, "05-02"],
+  [2033, "04-24"],
+  [2034, "04-09"],
+  [2035, "04-29"],
+  [2036, "04-20"],
+  [2037, "04-05"],
+  [2038, "04-25"],
+  [2039, "04-17"],
+  [2040, "05-06"],
+  [2041, "04-21"],
+  [2042, "04-13"],
+  [2043, "05-03"],
+  [2044, "04-24"],
+  [2045, "04-09"],
+  [2046, "04-29"],
+  [2047, "04-21"],
+  [2048, "04-05"],
+  [2049, "04-25"],
+  [2050, "04-17"],
 ]; // these are  the dates of the Ressurection feast got from خدمة الشماس والألحان للمعلم فرج عبد المسيح الطبعة 14 سنة 2019
 
 const copticMonths: { AR: string; FR: string; EN: string }[] = [
@@ -182,6 +181,7 @@ const Prefix = {
   HolyWeek: "HW_", //Stands for Holy Week
   placeHolder: "PlaceHolder_",
   psalmody: "Psalmody_",
+  prayersArray: 'PrayersArray_',
 };
 const plusCharCode: number = 10133;
 const btnClass = "sideBarBtn";
@@ -259,7 +259,7 @@ const bookOfHours: {
   VeilHour: [number[], typeBtnLabel];
   MidNight1Hour: [number[], typeBtnLabel];
   MidNight2Hour: [number[], typeBtnLabel];
-  MidNight3Hour: [number[], typeBtnLabel];
+  MidNight3Hour: [number[], typeBtnLabel]
 } = {
   //The first element is the array that will be populated with the text tables. The second element is the sequence of the hour's psalms
 
@@ -349,26 +349,26 @@ const bookOfHours: {
 };
 
 const ReadingsArrays = {
-  PraxisArray: [],
-  KatholikonArray: [],
-  StPaulArray: [],
-  SynaxariumArray: [],
-  GospelMassArray: [],
-  GospelVespersArray: [],
-  GospelDawnArray: [],
-  GospelNightArray: [],
-  PropheciesDawnArray: [],
+  PraxisArrayFR: [] as string[][][],
+  KatholikonArrayFR: [] as string[][][],
+  StPaulArrayFR: [] as string[][][],
+  SynaxariumArrayFR: [] as string[][][],
+  GospelMassArrayFR: [] as string[][][],
+  GospelVespersArrayFR: [] as string[][][],
+  GospelDawnArrayFR: [] as string[][][],
+  GospelNightArrayFR: [] as string[][][],
+  PropheciesDawnArrayFR: [] as string[][][],
 };
 const Seasons = {
   //Seasons are periods of more than 1 day, for which we have specific prayers (e.g.: cymbal verses, doxologies, praxis response, etc.)
   StMaryFast: "StMFast", //stands for Saint Mary Feast
   Nayrouz: "Nay", //Stands for Nayrouz from 1 Tout to 16 Tout
   NativityFast: "NF", //(from 16 Hatour until 28 Kiahk included) stands for Nativity Fast
-  Kiahk: "KiahkAny", //The whole month of Kiahk
-  KiahkWeek1: "Kiahk1", //1st Week of Kiahk
-  KiahkWeek2: "Kiahk2", //2nd Week of Kiahk
-  KiahkWeek3: "Kiahk3", //3rd Week of Kiahk
-  KiahkWeek4: "Kiahk4", //4th Week of Kiahk
+  Kiahk: "Khk", //The whole month of Kiahk
+  KiahkWeek1: "Khk1", //1st Week of Kiahk
+  KiahkWeek2: "Khk2", //2nd Week of Kiahk
+  KiahkWeek3: "Khk3", //3rd Week of Kiahk
+  KiahkWeek4: "Khk4", //4th Week of Kiahk
   NativityParamoun: "NP", //either 2804 before 3 PM or 26, 27 and 2804 if 2904 is a Monday, or 27 and 28 if 2904 is a Sunday
   Nativity: "Nat", //from 28 Kiahk afternoon to 6 Toubi
   BaptismParamoun: "BP", //If the Baptism Feast comes a Monday or a Sunday , the Baptism Paramoun is 3 or 2 days
@@ -376,7 +376,8 @@ const Seasons = {
   GreatLent: "GL", // Stand for Great Lent
   HolyWeek: "HW", //Stands for Holy Week
   PentecostalDays: "Pntl", //(from the Holy Saturday Afternoon, until the 7th Sunday)  Stands for Pentecostal Days
-  JonahFast: "Jonah", //Stands for Jonah Feast
+  JonahFast: "JFast", //Stands for Jonah Feast
+  JonahFeast: "JFeast", //Stands for Jonah Feast
   ApostlesFast: "Apost", //Stands for Apostles Feast
   CrossFeast: "Cross", //Stands for Cross Feast
   NoSeason: "NoSpecificSeason",
@@ -397,7 +398,7 @@ const copticFeasts = {
   Annonciation: "2907",
   EndOfGreatLentFriday: Seasons.GreatLent + " 49",
   LazarusSaturday: Seasons.GreatLent + "50",
-  PalmSunday: Seasons.GreatLent + "8thSunday",
+  PalmSunday: Seasons.GreatLent + "7thSunday",
   HolyMonday: Seasons.GreatLent + "52",
   HolyTuseday: Seasons.GreatLent + "53",
   HolyWednsday: Seasons.GreatLent + "54",
@@ -577,7 +578,7 @@ const GreatLordFeasts = [
   ],
   textAmplified = [];
 //VARS
-let PrayersArray: string[][][] = [];
+let PrayersArrayFR: string[][][] = [];
 let lastClickedButton: Button;
 let selectedDate: number, //This is the date that the user might have manually selected
   copticDate: string, //The Coptic date is stored in a string not in a number like the gregorian date, this is to avoid complex calculations
@@ -589,25 +590,22 @@ let selectedDate: number, //This is the date that the user might have manually s
   weekDay: number; //This is today's day of the week (Sunday, Monday, etc.) expressed in number starting from 0
 var todayDate: Date;
 let isFast: boolean;
-type Actor = { EN: string; FR?: string; AR?: string; COP?: string };
+type Actor = { EN: string; FR?: string; AR?: string };
 
 let actors: Actor[] = [
   {
     EN: "Priest",
     FR: "Prêtre",
-    COP: "Prêtre",
     AR: "الكاهن",
   },
   {
     EN: "Diacon",
     FR: "Diacre",
-    COP: "Diacre",
     AR: "الشماس",
   },
   {
     EN: "Assembly",
     FR: "Assemblée",
-    COP: "Assemblée",
     AR: "الشعب",
   },
   {
@@ -690,49 +688,50 @@ const PrayersArraysKeys: [string, string, Function][] = [
   [Prefix.commonIncense, "IncensePrayersArray", () => IncensePrayersArray],
   [
     Prefix.gospelMass,
-    "ReadingsArrays.GospelMassArray",
-    () => ReadingsArrays.GospelMassArray,
+    "ReadingsArrays.GospelMassArrayFR",
+    () => ReadingsArrays.GospelMassArrayFR,
   ],
   [
     Prefix.gospelDawn,
-    "ReadingsArrays.GospelDawnArray",
-    () => ReadingsArrays.GospelDawnArray,
+    "ReadingsArrays.GospelDawnArrayFR",
+    () => ReadingsArrays.GospelDawnArrayFR,
   ],
   [
     Prefix.gospelVespers,
-    "ReadingsArrays.GospelVespersArray",
-    () => ReadingsArrays.GospelVespersArray,
+    "ReadingsArrays.GospelVespersArrayFR",
+    () => ReadingsArrays.GospelVespersArrayFR,
   ],
   [
     Prefix.gospelNight,
-    "ReadingsArrays.GospelNightArray",
-    () => ReadingsArrays.GospelNightArray,
+    "ReadingsArrays.GospelNightArrayFR",
+    () => ReadingsArrays.GospelNightArrayFR,
   ],
   [
     Prefix.stPaul,
-    "ReadingsArrays.StPaulArray",
-    () => ReadingsArrays.StPaulArray,
+    "ReadingsArrays.StPaulArrayFR",
+    () => ReadingsArrays.StPaulArrayFR,
   ],
   [
     Prefix.katholikon,
-    "ReadingsArrays.KatholikonArray",
-    () => ReadingsArrays.KatholikonArray,
+    "ReadingsArrays.KatholikonArrayFR",
+    () => ReadingsArrays.KatholikonArrayFR,
   ],
   [
     Prefix.praxis,
-    "ReadingsArrays.PraxisArray",
-    () => ReadingsArrays.PraxisArray,
+    "ReadingsArrays.PraxisArrayFR",
+    () => ReadingsArrays.PraxisArrayFR,
   ],
 
   [
     Prefix.synaxarium,
-    "ReadingsArrays.SynaxariumArray",
-    () => ReadingsArrays.SynaxariumArray,
+    "ReadingsArrays.SynaxariumArrayFR",
+    () => ReadingsArrays.SynaxariumArrayFR,
   ],
   [
     Prefix.propheciesDawn,
-    "ReadingsArrays.PropheciesDawnArray",
-    () => ReadingsArrays.PropheciesDawnArray,
+    "ReadingsArrays.PropheciesDawnArrayFR",
+    () => ReadingsArrays.PropheciesDawnArrayFR,
   ],
   [Prefix.psalmody, "PsalmodyPrayersArray", () => PsalmodyPrayersArray],
+  [Prefix.prayersArray, 'PrayersArrayFR', () => PrayersArrayFR],
 ];

@@ -36,7 +36,10 @@ function startEditingMode(args: {
     //under development : the user will provide a function and the function will be called when he press enter
     else if (args.arrayName === args.select.options[3].innerText)
       return editDayReadings(); //Editing all the readings of ta give Coptic Date
-    else args.tablesArray = editSpecificTable() || [];
+    else {
+      args.arrayName === 'PrayersArray' ? args.arrayName = 'PrayersArrayFR' :  args.arrayName = 'ReadingsArrays.' + args.arrayName + 'FR';
+      args.tablesArray = editSpecificTable() || []
+    };
 
     args.select.selectedIndex = 0;
   } else if (!args.tablesArray) args.tablesArray = editSpecificTable() || []; //If the arrayName and the tableTitle are provided, it means the user wants to edit a specific table
@@ -78,12 +81,15 @@ function startEditingMode(args: {
   }
 
   function editSpecificTable(
-    arrayName: string = args.arrayName
+    arrayName: string = args.arrayName 
   ): string[][][] | void {
+   
+    alert(arrayName);
     if (
       !args.tableTitle && //args.tableTitle was not already provided as argument
       confirm("Do you want to edit a single or specific table(s) in the array?")
     )
+    
       args.tableTitle = prompt(
         'Provide the name of the table you want to edit  (if more than one table, provide the titles separated by ", " '
       );
@@ -96,7 +102,7 @@ function startEditingMode(args: {
         "No tableTitle is provided, do you want to edit the entire tables array?"
       )
     )
-      return eval(arrayName); //If no tableTitle if provided, we will return the entire array
+      return eval(arrayName); //If no tableTitle is provided, we will return the entire array
 
     let titles = args.tableTitle.split(", "); //if tableTitle is a comma separated string, it means there are multiple table titles provided
 
@@ -108,7 +114,7 @@ function startEditingMode(args: {
       (title) =>
         findTable(
           title,
-          args.arrayName ? eval(args.arrayName) : undefined,
+          arrayName ? eval(arrayName) : undefined,
           args.operator || { includes: true }
         ) || undefined
     );
@@ -166,7 +172,7 @@ function showTables(args: {
     titleBase = splitTitle(table[0][0])[0] || "NoTitle";
     prayersArray = getTablesArrayFromTitlePrefix(titleBase);
     PrayersArrays.includes(prayersArray)
-      ? (arrayName = "PrayersArray")
+      ? (arrayName = "PrayersArrayFR")
       : (arrayName = getArrayNameFromArray(prayersArray)); //If the array of tables that includes the table is one of the arrays in the 'PrayersArrays' list, we set the arrayName to 'PrayersArray', or otherwise, we retrieve its name from the PrayersArraysKeys by calling getArrayNameFromArray(prayersArray)
     if (
       !arrayName &&
@@ -275,6 +281,11 @@ function addEdintingButtons() {
     btnsDiv
   );
   createEditingButton(
+    () => addNewCell(document.getSelection().focusNode.parentElement),
+    "Add Cell",
+    btnsDiv
+  );
+  createEditingButton(
     () => addNewRow(document.getSelection().focusNode.parentElement, true),
     "Add PlaceHolder",
     btnsDiv
@@ -287,6 +298,11 @@ function addEdintingButtons() {
   createEditingButton(
     () => deleteRow(document.getSelection().focusNode.parentElement),
     "Delete Row",
+    btnsDiv
+  );
+  createEditingButton(
+    () => deleteCell(document.getSelection().focusNode.parentElement),
+    "Delete Cell",
     btnsDiv
   );
   createEditingButton(
@@ -356,6 +372,21 @@ function deleteRow(htmlParag: HTMLElement) {
   if (!htmlRow) return;
   if (confirm("Are you sure you want to delete this row?") === false) return; //We ask the user to confirm before deletion
   htmlRow.remove();
+}
+/**
+ * Deletes a cell in a row
+ * @param {HTMLElement} htmlParag - the paragraph that we want to delete 
+ * @returns
+ */
+function deleteCell(htmlParag: HTMLElement) {
+  if (htmlParag.tagName !== 'P') return alert('The selection is not a paragraph');
+  let htmlRow = getHtmlRow(htmlParag) as HTMLElement;
+  if (!htmlRow) return;
+
+  if (!confirm("Are you sure you want to delete this paragraph?")) return; //We ask the user to confirm before deletion
+  htmlParag.remove();
+  htmlRow.style.gridTemplateColumns = setGridColumnsOrRowsNumber(htmlRow);//We adapt the number of columns of the parent div 
+  htmlRow.style.gridTemplateAreas = setGridAreas(htmlRow);//We adapt the grid areas of the parent div
 }
 
 /**
@@ -526,7 +557,7 @@ function saveModifiedArray(args: {
 
     tablesArray = eval(htmlRow.dataset.arrayName);
 
-    if (PrayersArrays.includes(tablesArray)) tablesArray = PrayersArray; //If the array is one of the arrays in PrayersArrays, the Array that need to be saved is Prayers Array not the sub array itself
+    if (PrayersArrays.includes(tablesArray)) tablesArray = PrayersArrayFR; //If the array is one of the arrays in PrayersArrays, the Array that need to be saved is Prayers Array not the sub array itself
 
     if (!tablesArray)
       return console.log(
@@ -690,7 +721,8 @@ function processArrayTextForJsFile(
     //for each string element in row[]
     element = element
       .replaceAll('"', '\\"') //replacing '"" by '\"'
-      .replaceAll("\n", "\\n");
+      .replaceAll("\n", "\\n")
+      .replaceAll("\r", "\\r") ;
 
     if (splitTitle(row[0])[1] === "Title")
       element = element
@@ -822,6 +854,21 @@ function addNewRow(htmlParag: HTMLElement, isPlaceHolder: boolean = false, title
 
   return htmlRow.insertAdjacentElement("afterend", newRow) as HTMLElement;
 }
+function addNewCell(htmlParag: HTMLElement): HTMLElement | void {
+  let htmlRow = getHtmlRow(htmlParag);
+  if (!htmlRow) return;
+  let p = document.createElement("p"),
+    lang: string = prompt('Provide the language of the paragraph') || 'FR';
+  p.contentEditable = 'true';
+  p.dataset.root = htmlParag.dataset.root;
+  p.title = htmlParag.title;
+  p.classList.add(lang);
+  p.lang = lang;
+  p.innerText = 'New paragraph added';
+  htmlParag.insertAdjacentElement("afterend", p) as HTMLElement;
+  htmlRow.style.gridTemplateAreas = setGridAreas(htmlRow);
+  htmlRow.style.gridTemplateColumns = setGridColumnsOrRowsNumber(htmlRow);
+}
 function addNewColumn(htmlParag: HTMLElement): HTMLElement | void {
   if (htmlParag.tagName !== "P")
     return alert("The html element passed to addNewColumn is not a paragraph");
@@ -879,6 +926,9 @@ function createHtmlElementForPrayerEditingMode(args: {
       getTablesArrayFromTitlePrefix(args.titleBase)
     );
   if (!args.arrayName) return;
+
+  if (args.titleBase.startsWith(Prefix.HolyWeek) && args.arrayName === 'ReadingsArrays.GospelNightArrayFR') args.languagesArray = getLanguages('PrayersArrayFR');
+
 
   let htmlRow: HTMLDivElement,
     p: HTMLParagraphElement,
@@ -1276,10 +1326,11 @@ function getHtmlRow(htmlParag: HTMLElement): HTMLDivElement | undefined | void {
  * @param {string} arrayName - the name of a string[][][], for which we will return the languages corresponding to it
  * @returns {string[]} - an array of languages
  */
-function getLanguages(arrayName): string[] {
+function getLanguages(arrayName?): string[] {
   let languages: string[] = prayersLanguages;
   if (!arrayName) return languages;
-  if (arrayName.startsWith("ReadingsArrays.")) languages = readingsLanguages;
+  if (arrayName.startsWith("ReadingsArrays."))
+    languages = readingsLanguages;
   if (arrayName.startsWith("ReadingsArrays.SynaxariumArray"))
     languages = ["FR", "AR"];
   if (arrayName === "NewTable") languages = ["COP", "FR", "EN", "CA", "AR"];
@@ -1290,14 +1341,15 @@ function getLanguages(arrayName): string[] {
  * Converts the coptic font of the text in the selected html element, to a unicode font
  * @param {HTMLElement} htmlElement - an editable html element in which the cursor is placed, containing coptic text in a non unicode font, that we need to convert
  */
-function convertCopticFontFromAPI(htmlElement: HTMLElement) {
+async function convertCopticFontFromAPI(htmlElement: HTMLElement, fontFrom?: string) {
+  let text: string;
   const apiURL: string =
     "https://www.copticchurch.net/coptic_language/fonts/convert";
-  let fontFrom: string = prompt("Provide the font", "Coptic1/CS Avva Shenouda");
+  if(!fontFrom) fontFrom = prompt("Provide the font", "Coptic1/CS Avva Shenouda");
 
   while (htmlElement.tagName !== "P" && htmlElement.parentElement)
     htmlElement = htmlElement.parentElement;
-  let text: string = htmlElement.textContent;
+  text = htmlElement.textContent;
   let request = new XMLHttpRequest();
   request.open("POST", apiURL);
   request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -1309,19 +1361,24 @@ function convertCopticFontFromAPI(htmlElement: HTMLElement) {
     encodeURI(text)
   );
   request.responseType = "text";
-  request.onload = () => {
-    if (request.status === 200) {
-      let textArea: HTMLElement = new DOMParser()
-        .parseFromString(request.response, "text/html")
-        .getElementsByTagName("textarea")[0];
-      console.log("converted text = ", textArea.innerText);
-      htmlElement.innerText = textArea.innerText;
-      return textArea.innerText;
-    } else {
-      console.log("error status text = ", request.statusText);
-      return request.statusText;
-    }
-  };
+  request.onload = () => {return onLoad()};
+  
+    function onLoad() {
+      if (request.status === 200) {
+        let textArea: HTMLElement = new DOMParser()
+          .parseFromString(request.response, "text/html")
+          .getElementsByTagName("textarea")[0];
+        console.log("converted text = ", textArea.innerText);
+        htmlElement.innerText = textArea.innerText;
+        text = textArea.innerText;
+        return textArea.innerText;
+      } else {
+        console.log("error status text = ", request.statusText);
+        text = 'Failed and got error : ' + request.statusText
+        return request.statusText;
+      }
+  }
+  return text
 }
 
 function goToTableByTitle() {
@@ -1456,16 +1513,17 @@ function editDayReadings(date?: string) {
     });
   });
 
-  for (let arrayName in ReadingsArrays) {
-    ReadingsArrays[arrayName]
-      .filter((table) => table[0][0].includes(date))
+  Object.entries(ReadingsArrays)
+    .forEach(readingArray => {
+      readingArray[1].filter((table) => table[0][0].includes(date))
       .forEach((table) => {
         startEditingMode({
-          tableTitle: table[0][0],
+          tableTitle: splitTitle(table[0][0])[0],
+          arrayName:'ReadingsArrays.' + readingArray[0],
           clear: false,
         });
       });
-  }
+    });
 }
 function showBtnInEditingMode(btn: Button) {
   if (containerDiv.children.length > 0)
@@ -1553,7 +1611,8 @@ function showBtnInEditingMode(btn: Button) {
 
 function modifyAllSelectedText() {
   let paragraph = document.getSelection().focusNode.parentElement;
-  if (!paragraph) return;
+  while (paragraph.tagName !== 'P' && paragraph.parentElement) paragraph = paragraph.parentElement;//We go up until we reach the parent html paragraph element
+  if (!paragraph) return alert('Could not select the paragraph');
   let selected = getSelectedText();
   if (!selected) return alert("You didn't select any text");
   let text = selected.toString();
@@ -1571,6 +1630,8 @@ function modifyAllSelectedText() {
   let array: string[][][] = eval(arrayName);
   if (!array) return alert("Couldn't retrive the array");
 
+  saveModifiedArray({ exportToFile: false, exportToStorage: true });//We update the array by including what has been edited and is still displayed but not saved yet
+
   array.forEach((table) =>
     table.forEach((row) => {
       if (!row || !row[index] || !row[index].includes(text)) return;
@@ -1578,11 +1639,25 @@ function modifyAllSelectedText() {
     })
   );
 
-  Array.from(containerDiv.children).forEach(
-    (child) => (child.innerHTML = child.innerHTML.replaceAll(text, modified)) //! We must modify the text of the edited paragraph, othewise, when we will go to next or previous table, the text of the table will replace the modified text
-  );
+  (function reloadCurrentlyEditedTables() {
+    //We will reload the currently displayed table(s)
 
-  saveOrExportArray(array, arrayName, false, true);
+    let titles = new Set(
+      Array.from(containerDiv.children as HTMLCollectionOf<HTMLDivElement>)
+        .filter((htmlRow) => htmlRow.title)
+        .map((htmlRow) => splitTitle(htmlRow.title)[0]));//We retrieve the titles of the all the displayed tables
+
+    containerDiv.dataset.arrayName = '';//We do this in order to avoid that startEditingMode() triggers the alert for the user to confirm that he wants to reload another table from the sama array
+
+    startEditingMode({
+      tableTitle: Array.from(titles).join(', '),
+      arrayName: arrayName,
+      languages: getLanguages(arrayName),
+      clear: true
+    });
+
+  })();
+
 }
 
 function getSelectedText(): Selection {

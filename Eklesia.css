@@ -128,7 +128,7 @@ width: 40%;
 }
 
 
-.addLang, .langBtnAdd, .settingsBtn, .colorbtn {
+.addLang, .langBtnAdd, .colorbtn {
   display: grid;
   background-color: rgba(161, 9, 29, 0.705);
   border-radius: 10px;
@@ -614,19 +614,24 @@ br{
   width:95%;
 }
 .multipleChoicePrayersBtn{
-  background-color: rgb(41, 43, 43) !important;
-  width: 41vw;
-  margin: 2px 2px;
-  height: fit-content;
-  min-height: 40vh;
+  background-color: rgb(3, 87, 87) !important;
+  width: 46cqw;
+  margin: 6px 6px;
+  height: 34cqh;
   justify-items: center;
-  border-radius: 20px;
+  border-radius: 40%;
+  border-color: goldenrod;
+  border-width: 6px;
+  outline-color: #012723;
+  outline-style: solid;
+  outline-width: 2px;
+  padding: 2cqi;
 }
 .multipleChoicePrayersBtn >p{
   color:white;
   font-weight: 600;
-  font-size: 11pt;
-  line-height: 14pt;
+  font-size: 15pt;
+  line-height: 17pt;
   margin:1px 1px;
   border-right: none !important ;
 }
@@ -673,17 +678,28 @@ br{
   background-color: red !important;
 }
 
-.settingsBtn{
+.settingsBtn, .updateBtn{
   background-color: green;
+  border-color: white;
+  border-width: 4px;
+  outline-color: grey;
+  outline-width: 3px;
+  border-radius: 10px;
   color:white;
-  padding: 12pt;
+  padding: 3px;
+  width: fit-content;
+  font-size: 2.8cqmin;
+  font-family: DCO;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.updateBtn{
+  background-color: rgb(190, 66, 175);
 }
 
 .ReadingIntro{
   background-color: darkgoldenrod;
   margin-top: 0px;
- /* border-top: #111 solid 2pt;
-  border-bottom: #111 solid 2pt;*/
   border-left: #111 solid 4pt;
   border-right: #111 solid 4pt;
 }
@@ -842,6 +858,14 @@ q{
   margin: 5px 5px;
   text-align: center;
   text-justify: auto;
+  width: 70%;
+  background-color: #ccc5c5;
+  border-radius: 5px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.settingsLabel>h3{
+  font-size: 2cqi !important;
 }
 
 h3{

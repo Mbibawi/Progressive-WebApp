@@ -12,6 +12,6 @@
       //  "modules/sw.ts",
    // ],
     "exclude": [
-        "node_modules", "old", "NewBuild", "Build", "Build 2023 22 03", "Other"
+        "node_modules", "old", "NewBuild", "Build", "Build 2023 22 03", "Other", "Extracted"
     ]
 }
